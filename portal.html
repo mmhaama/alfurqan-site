@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>بوابة أولياء الأمور | Ouderportaal – Al-Furqan Academie</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root{--green:#0f4d3c;--green-2:#14654f;--gold:#c9a24a;--gold-soft:#f3e7c6;--ink:#1d2a26;--muted:#5b6b66;
+    --paper:#fbf8f1;--card:#fff;--line:#e7dfcc;--radius:18px;--ok:#1f7a4d;--ok-bg:#e3f3ea;--warn:#9a5b00;--warn-bg:#fbefd9}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Naskh Arabic","Inter",system-ui,sans-serif;font-size:18px;line-height:1.8}
+  body.nl{font-family:"Inter",system-ui,sans-serif;font-size:17px;line-height:1.7}
+  body:not(.nl) [data-l="nl"]{display:none!important}
+  body.nl [data-l="ar"]{display:none!important}
+  .wrap{max-width:820px;margin:0 auto;padding:0 22px}
+  header{background:rgba(251,248,241,.92);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--green)}
+  .brand svg{width:40px;height:40px}
+  .brand b{font-family:"Amiri",serif;font-size:1.35rem;line-height:1.1;display:block}
+  .brand small{display:block;font-family:"Inter",sans-serif;font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .tools{display:flex;gap:10px;align-items:center}
+  .pill{border:1px solid var(--green);background:transparent;color:var(--green);border-radius:999px;padding:6px 14px;font:600 .85rem "Inter",sans-serif;cursor:pointer}
+  .pill:hover{background:var(--green);color:#fff}
+  h1{font-family:"Amiri",serif;color:var(--green);font-size:clamp(1.8rem,4vw,2.4rem);margin:38px 0 6px}
+  body.nl h1{font-family:"Inter",sans-serif;letter-spacing:-.01em}
+  .sub{color:var(--muted);margin:0 0 26px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-bottom:18px}
+  .card h2{margin:0 0 4px;font-size:1.25rem}
+  .muted{color:var(--muted);font-size:.95rem}
+  label{display:block;font-weight:700;margin:14px 0 6px}
+  input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font:inherit;background:#fff}
+  input.code{font-family:"Inter",monospace;letter-spacing:.3em;text-transform:uppercase;direction:ltr;text-align:center}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:999px;border:0;font:700 1rem inherit;cursor:pointer;margin-top:18px;background:var(--gold);color:#1d1a10}
+  .btn:disabled{opacity:.6;cursor:wait}
+  .msg{margin-top:12px;font-size:.95rem}
+  .msg.err{color:#a3261b}
+  .child-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .badge{display:inline-block;border-radius:999px;padding:4px 14px;font-weight:700;font-size:.9rem}
+  .badge.ok{background:var(--ok-bg);color:var(--ok)}
+  .badge.warn{background:var(--warn-bg);color:var(--warn)}
+  .badge.none{background:#eee;color:#555}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.97rem}
+  th,td{text-align:start;padding:10px 8px;border-top:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:.85rem}
+  .score{font-family:"Inter",sans-serif;font-weight:700;white-space:nowrap}
+  @media(max-width:480px){.brand small{display:none}.brand b{font-size:1.15rem}}
+  .hidden{display:none!important}
+  #gbtn{margin-top:10px;min-height:44px}
+  footer{padding:30px 0 40px;color:var(--muted);font-size:.9rem;text-align:center}
+  footer a{color:var(--green-2)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="/">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3l6 14 15 6-15 6-6 15-6-15-15-6 15-6z" fill="#0f4d3c"/><circle cx="24" cy="23" r="6.5" fill="#c9a24a"/></svg>
+      <span><b data-l="ar">أكاديمية الفرقان</b><b data-l="nl">Al-Furqan Academie</b><small>Terneuzen · Zeeland</small></span>
+    </a>
+    <div class="tools">
+      <button class="pill hidden" id="outBtn" type="button"><span data-l="ar">خروج</span><span data-l="nl">Uitloggen</span></button>
+      <button class="pill" id="langBtn" type="button">Nederlands</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1><span data-l="ar">بوابة أولياء الأمور</span><span data-l="nl">Ouderportaal</span></h1>
+  <p class="sub" id="who">
+    <span data-l="ar">تابع نتائج طفلك الشهرية وحالة الدفع للشهر الحالي.</span>
+    <span data-l="nl">Bekijk de maandresultaten van uw kind en de betaalstatus van deze maand.</span>
+  </p>
+
+  <!-- 1. sign in -->
+  <section class="card" id="signin">
+    <h2><span data-l="ar">تسجيل الدخول</span><span data-l="nl">Inloggen</span></h2>
+    <p class="muted"><span data-l="ar">سجّل الدخول بحساب Google الخاص بك.</span><span data-l="nl">Log in met uw Google-account.</span></p>
+    <div id="gbtn"></div>
+  </section>
+
+  <!-- 2. children -->
+  <section id="kids" class="hidden"></section>
+
+  <!-- 3. link a child -->
+  <section class="card hidden" id="link">
+    <h2><span data-l="ar">ربط أطفالك بحسابك</span><span data-l="nl">Uw kinderen koppelen</span></h2>
+    <p class="muted">
+      <span data-l="ar">أدخل رمز العائلة (6 أحرف) الذي وصلك عبر واتساب، وتاريخ ميلاد أحد أطفالك. سيُربط كل أطفالك المسجلين بهذا الرمز.</span>
+      <span data-l="nl">Vul de gezinscode (6 tekens) in die u via WhatsApp heeft ontvangen, en de geboortedatum van een van uw kinderen. Al uw kinderen met deze code worden gekoppeld.</span>
+    </p>
+    <form id="linkForm" autocomplete="off">
+      <label for="code"><span data-l="ar">رمز العائلة</span><span data-l="nl">Gezinscode</span></label>
+      <input class="code" id="code" maxlength="6" required inputmode="text" autocapitalize="characters">
+      <label for="dob"><span data-l="ar">تاريخ ميلاد الطفل</span><span data-l="nl">Geboortedatum van het kind</span></label>
+      <input type="date" id="dob" required>
+      <button class="btn" id="linkBtn" type="submit"><span data-l="ar">ربط</span><span data-l="nl">Koppelen</span></button>
+      <div class="msg" id="linkMsg"></div>
+    </form>
+  </section>
+
+  <div class="msg err" id="err"></div>
+</main>
+
+<footer class="wrap">
+  <span data-l="ar">لم يصلك رمز العائلة؟</span><span data-l="nl">Geen gezinscode ontvangen?</span>
+  <a href="https://wa.me/31616081362" target="_blank" rel="noopener"><span data-l="ar">راسلنا على واتساب</span><span data-l="nl">Stuur ons een WhatsApp</span></a>
+  · <a href="/privacy.html"><span data-l="ar">سياسة الخصوصية</span><span data-l="nl">Privacy</span></a>
+  · <a href="/"><span data-l="ar">الصفحة الرئيسية</span><span data-l="nl">Home</span></a>
+</footer>
+
+<script>
+/* ===== settings ===== */
+var CLIENT_ID = '245259754538-snhtq8dl043apofpnsg1c9ihnlsmslh8.apps.googleusercontent.com';
+var API_URL   = 'https://script.google.com/macros/s/AKfycbz0SWv9GEW0fZg3ZYK_D5MAnx4cjc0Y8_Wfx_EydxjNKcKvpnCTUqCKw-IbWif-uOg/exec';
+
+var T = {
+  ar:{monthNames:{Sep:'سبتمبر',Okt:'أكتوبر',Nov:'نوفمبر',Dec:'ديسمبر',Jan:'يناير',Feb:'فبراير',Mrt:'مارس',Apr:'أبريل',Mei:'مايو',Jun:'يونيو'},
+      paid:'تم دفع شهر ', unpaid:'لم يُسجَّل دفع شهر ', summer:'لا دروس هذا الشهر', group:'المجموعة ',
+      month:'الشهر', score:'الدرجة', rating:'التقدير', note:'ملاحظة المعلم', noResults:'لا توجد نتائج بعد.',
+      ratings:['يحتاج متابعة','مقبول','جيد','جيد جداً','ممتاز'], signedIn:'مسجّل الدخول بـ ',
+      none:'لا يوجد أطفال مربوطون بهذا الحساب بعد.', linked:'تم الربط بنجاح.', addMore:'ربط طفل آخر',
+      errors:{no_match:'الرمز أو تاريخ الميلاد غير صحيح.',too_many_attempts:'محاولات كثيرة. حاول بعد 30 دقيقة.',
+              bad_input:'تأكد من إدخال رمز من 6 أحرف وتاريخ الميلاد.',session_expired:'انتهت الجلسة، سجّل الدخول مجدداً.',
+              network:'تعذّر الاتصال. حاول مرة أخرى.',other:'حدث خطأ. حاول مرة أخرى أو راسلنا على واتساب.'}},
+  nl:{monthNames:{Sep:'september',Okt:'oktober',Nov:'november',Dec:'december',Jan:'januari',Feb:'februari',Mrt:'maart',Apr:'april',Mei:'mei',Jun:'juni'},
+      paid:'Betaald: ', unpaid:'Nog niet betaald: ', summer:'Geen lessen deze maand', group:'Groep ',
+      month:'Maand', score:'Cijfer', rating:'Beoordeling', note:'Opmerking docent', noResults:'Nog geen resultaten.',
+      ratings:['Extra aandacht nodig','Voldoende','Goed','Zeer goed','Uitstekend'], signedIn:'Ingelogd als ',
+      none:'Er zijn nog geen kinderen aan dit account gekoppeld.', linked:'Gekoppeld.', addMore:'Nog een kind koppelen',
+      errors:{no_match:'De code of geboortedatum klopt niet.',too_many_attempts:'Te veel pogingen. Probeer het over 30 minuten opnieuw.',
+              bad_input:'Vul een code van 6 tekens en de geboortedatum in.',session_expired:'Sessie verlopen, log opnieuw in.',
+              network:'Geen verbinding. Probeer het opnieuw.',other:'Er ging iets mis. Probeer het opnieuw of stuur ons een WhatsApp.'}}
+};
+
+var lang='ar', token=null, lastData=null;
+function t(){return T[lang]}
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+function setLang(l){
+  lang=l; var nl=l==='nl';
+  document.body.classList.toggle('nl',nl);
+  document.documentElement.lang=nl?'nl':'ar'; document.documentElement.dir=nl?'ltr':'rtl';
+  $('langBtn').textContent=nl?'العربية':'Nederlands';
+  try{localStorage.setItem('lang',l)}catch(e){}
+  if(lastData) render(lastData);
+}
+
+function rating(score){
+  if(score==null||isNaN(score)) return '';
+  var r=t().ratings; return score>=9?r[4]:score>=8?r[3]:score>=6.5?r[2]:score>=5.5?r[1]:r[0];
+}
+
+function api(payload){
+  payload.idToken=token;
+  return fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}) // text/plain → no CORS preflight
+    .then(function(r){return r.json()})
+    .catch(function(){return {ok:false,error:'network'}});
+}
+
+function showError(code){
+  var e=t().errors; $('err').textContent=e[code]||e.other;
+  if(code==='session_expired'||code==='bad_token') signOut();
+}
+
+function render(data){
+  lastData=data;
+  var kids=data.children||[], box=$('kids'), L=t(), html='';
+  $('who').innerHTML=esc(L.signedIn)+'<span class="num" dir="ltr">'+esc(data.email||'')+'</span>';
+  if(!kids.length){ html='<div class="card"><p class="muted" style="margin:0">'+esc(L.none)+'</p></div>'; }
+  kids.forEach(function(k){
+    var m=k.month, badge;
+    if(!m) badge='<span class="badge none">'+esc(L.summer)+'</span>';
+    else if(k.paid) badge='<span class="badge ok">✓ '+esc(L.paid+L.monthNames[m])+'</span>';
+    else badge='<span class="badge warn">'+esc(L.unpaid+L.monthNames[m])+'</span>';
+    var rows=(k.results||[]).map(function(r){
+      return '<tr><td>'+esc(L.monthNames[r.month]||r.month)+'</td><td class="score">'+(r.score==null?'–':'<bdi dir="ltr">'+esc(r.score)+'/10</bdi>')+
+             '</td><td>'+esc(rating(r.score))+'</td><td>'+esc(r.note)+'</td></tr>';
+    }).join('');
+    html+='<article class="card"><div class="child-head"><div><h2>'+esc(k.name)+'</h2>'+
+          (k.group?'<div class="muted">'+esc(L.group+k.group)+'</div>':'')+'</div>'+badge+'</div>'+
+          (rows?'<table><thead><tr><th>'+L.month+'</th><th>'+L.score+'</th><th>'+L.rating+'</th><th>'+L.note+'</th></tr></thead><tbody>'+rows+'</tbody></table>'
+               :'<p class="muted" style="margin:14px 0 0">'+esc(L.noResults)+'</p>')+'</article>';
+  });
+  box.innerHTML=html; box.classList.remove('hidden');
+  $('link').classList.remove('hidden');
+}
+
+function onCredential(resp){
+  token=resp.credential; $('err').textContent='';
+  $('signin').classList.add('hidden'); $('outBtn').classList.remove('hidden');
+  try{sessionStorage.setItem('tok',token)}catch(e){}
+  load();
+}
+
+function load(){
+  api({action:'me'}).then(function(d){ if(d.ok) render(d); else showError(d.error); });
+}
+
+function signOut(){
+  token=null; lastData=null;
+  try{sessionStorage.removeItem('tok')}catch(e){}
+  if(window.google&&google.accounts) google.accounts.id.disableAutoSelect();
+  $('kids').classList.add('hidden'); $('link').classList.add('hidden');
+  $('signin').classList.remove('hidden'); $('outBtn').classList.add('hidden');
+}
+
+$('linkForm').addEventListener('submit',function(ev){
+  ev.preventDefault();
+  var btn=$('linkBtn'), msg=$('linkMsg'); btn.disabled=true; msg.className='msg'; msg.textContent='…';
+  api({action:'link',code:$('code').value.trim(),dob:$('dob').value}).then(function(d){
+    btn.disabled=false;
+    if(d.ok){ msg.textContent=t().linked; $('code').value=''; $('dob').value=''; render(d); }
+    else { msg.className='msg err'; msg.textContent=t().errors[d.error]||t().errors.other;
+           if(d.error==='session_expired') signOut(); }
+  });
+});
+$('outBtn').addEventListener('click',signOut);
+$('langBtn').addEventListener('click',function(){setLang(lang==='nl'?'ar':'nl')});
+
+(function init(){
+  var start='ar'; try{start=localStorage.getItem('lang')||'ar'}catch(e){}
+  setLang(start);
+  try{token=sessionStorage.getItem('tok')}catch(e){}
+  if(token){ $('signin').classList.add('hidden'); $('outBtn').classList.remove('hidden'); load(); }
+  (function waitGsi(){
+    if(!(window.google&&google.accounts&&google.accounts.id)) return setTimeout(waitGsi,150);
+    google.accounts.id.initialize({client_id:CLIENT_ID,callback:onCredential});
+    google.accounts.id.renderButton($('gbtn'),{theme:'outline',size:'large',shape:'pill',text:'signin_with'});
+  })();
+})();
+</script>
+</body>
+</html>
