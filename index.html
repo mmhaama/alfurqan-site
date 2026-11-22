@@ -40,7 +40,9 @@
   .lang{border:1px solid var(--green);background:transparent;color:var(--green);border-radius:999px;
     padding:6px 14px;font:600 .85rem "Inter",sans-serif;cursor:pointer}
   .lang:hover{background:var(--green);color:#fff}
-  @media(max-width:760px){nav a{display:none}}
+  .portal{border:1px solid var(--gold);background:var(--gold-soft);color:var(--green)!important;border-radius:999px;padding:5px 14px;font-weight:700;font-size:.88rem!important}
+  .portal:hover{background:var(--gold)}
+  @media(max-width:760px){nav a:not(.portal){display:none}}
 
   /* hero */
   .hero{position:relative;overflow:hidden;background:var(--green);color:#fff}
@@ -136,6 +138,7 @@
       <a href="#about"><span data-l="ar">عن الأكاديمية</span><span data-l="nl">Over ons</span></a>
       <a href="#schedule"><span data-l="ar">المواعيد</span><span data-l="nl">Lestijden</span></a>
       <a href="#location"><span data-l="ar">المكان</span><span data-l="nl">Locatie</span></a>
+      <a class="portal" href="/portal.html"><span data-l="ar">بوابة أولياء الأمور</span><span data-l="nl">Ouderportaal</span></a>
       <button class="lang" id="langBtn" type="button">Nederlands</button>
     </nav>
   </div>
@@ -275,7 +278,7 @@
 </main>
 
 <footer>
-  <div class="wrap">© <span id="y">2026</span> <span data-l="ar">أكاديمية الفرقان، ترنويزن</span><span data-l="nl">Al-Furqan Academie, Terneuzen</span></div>
+  <div class="wrap">© <span id="y">2026</span> <span data-l="ar">أكاديمية الفرقان، ترنويزن</span><span data-l="nl">Al-Furqan Academie, Terneuzen</span> · <a href="/privacy.html"><span data-l="ar">سياسة الخصوصية</span><span data-l="nl">Privacy</span></a></div>
 </footer>
 
 <script>
