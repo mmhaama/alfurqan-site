@@ -66,8 +66,7 @@
 
   /* facts strip */
   .facts{margin-top:-38px;position:relative;z-index:2}
-  .facts .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-  @media(max-width:760px){.facts .grid{grid-template-columns:repeat(2,1fr)}}
+  .facts .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   .fact{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;text-align:center;box-shadow:0 8px 24px rgba(15,77,60,.06)}
   .fact b{display:block;font-family:"Inter",sans-serif;font-size:1.6rem;color:var(--green)}
   .fact span{color:var(--muted);font-size:.92rem}
@@ -96,15 +95,6 @@
   .slot h3{margin:0 0 4px;font-size:1.15rem}
   .slot p{margin:0;color:var(--muted);font-size:.95rem}
   .note{margin-top:18px;color:var(--muted);font-size:.95rem}
-
-  /* fees */
-  .fees{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-  @media(max-width:760px){.fees{grid-template-columns:1fr}}
-  .fee{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px;text-align:center}
-  .fee.main{border:2px solid var(--gold);box-shadow:0 10px 30px rgba(201,162,74,.18)}
-  .fee .amt{font-family:"Inter",sans-serif;font-size:2.4rem;font-weight:700;color:var(--green);direction:ltr}
-  .fee .amt small{font-size:1rem;font-weight:600;color:var(--muted)}
-  .fee h3{margin:6px 0 0;font-size:1.05rem;color:var(--ink)}
 
   /* location */
   .loc{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
@@ -145,7 +135,6 @@
     <nav>
       <a href="#about"><span data-l="ar">عن الأكاديمية</span><span data-l="nl">Over ons</span></a>
       <a href="#schedule"><span data-l="ar">المواعيد</span><span data-l="nl">Lestijden</span></a>
-      <a href="#fees"><span data-l="ar">الرسوم</span><span data-l="nl">Kosten</span></a>
       <a href="#location"><span data-l="ar">المكان</span><span data-l="nl">Locatie</span></a>
       <button class="lang" id="langBtn" type="button">Nederlands</button>
     </nav>
@@ -176,7 +165,6 @@
       <div class="fact"><b>80+</b><span data-l="ar">طالب وطالبة</span><span data-l="nl">leerlingen</span></div>
       <div class="fact"><b>2</b><span data-l="ar">مستويات دراسية</span><span data-l="nl">niveaus</span></div>
       <div class="fact"><b class="num" data-l="ar">1.5</b><b class="num" data-l="nl">1,5 u</b><span data-l="ar">ساعة لكل درس</span><span data-l="nl">per les</span></div>
-      <div class="fact"><b class="num">€30</b><span data-l="ar">شهرياً للطفل</span><span data-l="nl">per maand</span></div>
     </div>
   </div>
 
@@ -230,21 +218,7 @@
     </div>
   </section>
 
-  <section id="fees">
-    <div class="wrap">
-      <div class="rule"></div>
-      <h2 data-l="ar">الرسوم الشهرية</h2><h2 data-l="nl">Maandelijkse bijdrage</h2>
-      <p class="sub" data-l="ar">رسوم شهرية ثابتة لكل طالب، مع خصم للإخوة.</p>
-      <p class="sub" data-l="nl">Een vaste maandelijkse bijdrage per kind, met korting voor broers en zussen.</p>
-      <div class="fees">
-        <div class="fee main"><div class="amt">€30<small> /mnd</small></div><h3 data-l="ar">الطفل الأول</h3><h3 data-l="nl">Eerste kind</h3></div>
-        <div class="fee"><div class="amt">€25<small> /mnd</small></div><h3 data-l="ar">الطفل الثاني</h3><h3 data-l="nl">Tweede kind</h3></div>
-        <div class="fee"><div class="amt">€20<small> /mnd</small></div><h3 data-l="ar">الطفل الثالث</h3><h3 data-l="nl">Derde kind</h3></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="location" class="alt">
+  <section id="location">
     <div class="wrap">
       <div class="rule"></div>
       <h2 data-l="ar">مكان الدروس</h2><h2 data-l="nl">Locatie</h2>
@@ -265,7 +239,7 @@
     </div>
   </section>
 
-  <section id="faq">
+  <section id="faq" class="alt">
     <div class="wrap">
       <div class="rule"></div>
       <h2 data-l="ar">أسئلة شائعة</h2><h2 data-l="nl">Veelgestelde vragen</h2>
@@ -283,11 +257,6 @@
         <summary><span data-l="ar">هل يحتاج الطفل إلى معرفة سابقة بالعربية؟</span><span data-l="nl">Moet mijn kind al Arabisch kunnen?</span></summary>
         <p data-l="ar">لا. المستوى الأول مخصص للمبتدئين تماماً.</p>
         <p data-l="nl">Nee. Niveau 1 is bedoeld voor echte beginners.</p>
-      </details>
-      <details>
-        <summary><span data-l="ar">هل هناك خصم للإخوة؟</span><span data-l="nl">Is er korting voor broers en zussen?</span></summary>
-        <p data-l="ar">نعم: الطفل الثاني €25 شهرياً، والطفل الثالث €20 شهرياً.</p>
-        <p data-l="nl">Ja: het tweede kind betaalt €25 per maand en het derde kind €20 per maand.</p>
       </details>
     </div>
   </section>
