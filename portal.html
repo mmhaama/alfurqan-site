@@ -36,7 +36,7 @@
   label{display:block;font-weight:700;margin:14px 0 6px}
   input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font:inherit;background:#fff}
   input.code{font-family:"Inter",monospace;letter-spacing:.3em;text-transform:uppercase;direction:ltr;text-align:center}
-  .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:999px;border:0;font:700 1rem inherit;cursor:pointer;margin-top:18px;background:var(--gold);color:#1d1a10}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:999px;border:0;font-family:inherit;font-weight:700;font-size:1rem;cursor:pointer;margin-top:18px;background:var(--gold);color:#1d1a10}
   .btn:disabled{opacity:.6;cursor:wait}
   .msg{margin-top:12px;font-size:.95rem}
   .msg.err{color:#a3261b}
@@ -91,12 +91,12 @@
   <section class="card hidden" id="link">
     <h2><span data-l="ar">ربط أطفالك بحسابك</span><span data-l="nl">Uw kinderen koppelen</span></h2>
     <p class="muted">
-      <span data-l="ar">أدخل رمز العائلة (6 أحرف) الذي وصلك عبر واتساب، وتاريخ ميلاد أحد أطفالك. سيُربط كل أطفالك المسجلين بهذا الرمز.</span>
-      <span data-l="nl">Vul de gezinscode (6 tekens) in die u via WhatsApp heeft ontvangen, en de geboortedatum van een van uw kinderen. Al uw kinderen met deze code worden gekoppeld.</span>
+      <span data-l="ar">أدخل رمز العائلة (4 أرقام) الذي وصلك عبر واتساب، وتاريخ ميلاد أحد أطفالك. سيُربط كل أطفالك المسجلين بهذا الرمز.</span>
+      <span data-l="nl">Vul de gezinscode (4 cijfers) in die u via WhatsApp heeft ontvangen, en de geboortedatum van een van uw kinderen. Al uw kinderen met deze code worden gekoppeld.</span>
     </p>
     <form id="linkForm" autocomplete="off">
       <label for="code"><span data-l="ar">رمز العائلة</span><span data-l="nl">Gezinscode</span></label>
-      <input class="code" id="code" maxlength="6" required inputmode="text" autocapitalize="characters">
+      <input class="code" id="code" maxlength="4" required inputmode="numeric" autocomplete="off">
       <label for="dob"><span data-l="ar">تاريخ ميلاد الطفل</span><span data-l="nl">Geboortedatum van het kind</span></label>
       <input type="date" id="dob" required>
       <button class="btn" id="linkBtn" type="submit"><span data-l="ar">ربط</span><span data-l="nl">Koppelen</span></button>
@@ -126,7 +126,7 @@ var T = {
       ratings:['يحتاج متابعة','مقبول','جيد','جيد جداً','ممتاز'], signedIn:'مسجّل الدخول بـ ',
       none:'لا يوجد أطفال مربوطون بهذا الحساب بعد.', linked:'تم الربط بنجاح.', addMore:'ربط طفل آخر',
       errors:{no_match:'الرمز أو تاريخ الميلاد غير صحيح.',too_many_attempts:'محاولات كثيرة. حاول بعد 30 دقيقة.',
-              bad_input:'تأكد من إدخال رمز من 6 أحرف وتاريخ الميلاد.',session_expired:'انتهت الجلسة، سجّل الدخول مجدداً.',
+              bad_input:'تأكد من إدخال رمز من 4 أرقام وتاريخ الميلاد.',session_expired:'انتهت الجلسة، سجّل الدخول مجدداً.',
               network:'تعذّر الاتصال. حاول مرة أخرى.',other:'حدث خطأ. حاول مرة أخرى أو راسلنا على واتساب.'}},
   nl:{monthNames:{Sep:'september',Okt:'oktober',Nov:'november',Dec:'december',Jan:'januari',Feb:'februari',Mrt:'maart',Apr:'april',Mei:'mei',Jun:'juni'},
       paid:'Betaald: ', unpaid:'Nog niet betaald: ', summer:'Geen lessen deze maand', group:'Groep ',
@@ -134,13 +134,14 @@ var T = {
       ratings:['Extra aandacht nodig','Voldoende','Goed','Zeer goed','Uitstekend'], signedIn:'Ingelogd als ',
       none:'Er zijn nog geen kinderen aan dit account gekoppeld.', linked:'Gekoppeld.', addMore:'Nog een kind koppelen',
       errors:{no_match:'De code of geboortedatum klopt niet.',too_many_attempts:'Te veel pogingen. Probeer het over 30 minuten opnieuw.',
-              bad_input:'Vul een code van 6 tekens en de geboortedatum in.',session_expired:'Sessie verlopen, log opnieuw in.',
+              bad_input:'Vul een code van 4 cijfers en de geboortedatum in.',session_expired:'Sessie verlopen, log opnieuw in.',
               network:'Geen verbinding. Probeer het opnieuw.',other:'Er ging iets mis. Probeer het opnieuw of stuur ons een WhatsApp.'}}
 };
 
 var lang='ar', token=null, lastData=null;
 function t(){return T[lang]}
 function $(id){return document.getElementById(id)}
+function digits(s){return String(s||'').replace(/[\u0660-\u0669]/g,function(c){return c.charCodeAt(0)-0x660}).replace(/[\u06F0-\u06F9]/g,function(c){return c.charCodeAt(0)-0x6F0}).replace(/\D/g,'')}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 
 function setLang(l){
@@ -214,7 +215,7 @@ function signOut(){
 $('linkForm').addEventListener('submit',function(ev){
   ev.preventDefault();
   var btn=$('linkBtn'), msg=$('linkMsg'); btn.disabled=true; msg.className='msg'; msg.textContent='…';
-  api({action:'link',code:$('code').value.trim(),dob:$('dob').value}).then(function(d){
+  api({action:'link',code:digits($('code').value),dob:$('dob').value}).then(function(d){
     btn.disabled=false;
     if(d.ok){ msg.textContent=t().linked; $('code').value=''; $('dob').value=''; render(d); }
     else { msg.className='msg err'; msg.textContent=t().errors[d.error]||t().errors.other;
