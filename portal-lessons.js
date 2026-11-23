@@ -172,7 +172,7 @@
   function langSec(k, l, key) {
     var u = LangRun.units[l.lang], L = w(), d = 0;
     try { d = +localStorage.getItem('lx_' + k.num + '_' + l.lang) || 0; } catch (e) {}
-    return '<div class="sec"><h4>🔤 ' + esc(L.arabic) + ': ' + esc(u.title) + '</h4><div class="muted">' + (lang === 'nl' ? esc(u.nl) + ' · ' : '') + '📕 ' + esc(L.book + u.pages) + '</div>' +
+    return '<div class="sec"><h4>🔤 ' + esc(L.arabic) + ': ' + esc(u.title) + '</h4><div class="muted">' + (lang === 'nl' ? esc(u.nl) + ' · ' : '') + '📕 ' + esc(L.book + (lang === 'nl' ? u.pages : arNum(u.pages))) + '</div>' +
       (d ? '<div class="done-ok" style="margin-top:8px">' + '⭐'.repeat(d) + ' ' + esc(L.langDone) + '</div>' : '') +
       '<div class="ctrl"><button class="sbtn gold" type="button" data-langgo="' + esc(l.lang) + '" data-key="' + key + '" data-num="' + k.num + '">' + esc(d ? L.langAgain : L.langGo) + '</button>' +
       '<a class="sbtn alt" style="text-decoration:none" href="/lang.html?u=' + encodeURIComponent(l.lang) + '&print=1" target="_blank" rel="noopener">🖨️ ' + esc(L.print) + '</a></div></div>';
@@ -241,8 +241,8 @@
     if (sur.length) {
       h += '<h3 class="libh">📖 ' + esc(L.libSurahs) + ' <span class="cnt">' + sur.length + '</span></h3><p class="muted" style="margin:0 0 4px;font-size:.85rem">' + esc(L.libHint) + '</p>';
       sur.forEach(function (n) {
-        h += '<details class="olds"><summary><span class="snum">' + n + '</span><span class="st"><b>' + esc((lang === 'nl' ? 'Soera ' : 'سورة ') + surahName(n)) + '</b>' +
-          '<span class="muted"><bdi>' + AYAHS[n - 1] + '</bdi>' + esc(L.ayatN) + '</span></span></summary><div class="obody">' +
+        h += '<details class="olds"><summary><span class="snum">' + (lang === 'nl' ? n : arNum(n)) + '</span><span class="st"><b>' + esc((lang === 'nl' ? 'Soera ' : 'سورة ') + surahName(n)) + '</b>' +
+          '<span class="muted"><bdi>' + (lang === 'nl' ? AYAHS[n - 1] : arNum(AYAHS[n - 1])) + '</bdi>' + esc(L.ayatN) + '</span></span></summary><div class="obody">' +
           surahSec(k.num + '_S' + n, n, 1, AYAHS[n - 1], L.fullSurah) + '</div></details>';
       });
     }
