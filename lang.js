@@ -7,6 +7,8 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function nl() { return window.lang === 'nl'; }
+  function ar(s) { return String(s).replace(/\d/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'[d]; }); }   // Arabic-Indic digits for the children
+  function pic(e) { return /^[\u0660-\u0669]+$/.test(e) ? '<span class="lx-num">' + e + '</span>' : e; }
 
   /* ---------- speech (browser voice) ---------- */
   var voice = null;
@@ -68,6 +70,7 @@
       '.lx-read{background:#fff;border:1px solid #e7dfcc;border-radius:14px;padding:12px;font-family:"Amiri",serif;font-size:1.6rem;line-height:2}' +
       '.lx-fb{text-align:center;font-weight:700;margin-top:10px;min-height:1.6em}.lx-fb.ok{color:#1f7a4d}.lx-fb.no{color:#b23b2e}' +
       '.lx-end{text-align:center;padding-top:20px}.lx-end .st{font-size:3rem;letter-spacing:6px}.lx-end h3{color:#0f4d3c;font-size:1.5rem;margin:8px 0}' +
+      '.lx-num{display:inline-flex;align-items:center;justify-content:center;min-width:1.3em;height:1.3em;padding:0 .1em;border-radius:.2em;background:#0f4d3c;color:#fff;font-family:"Amiri",serif;font-weight:700;line-height:1}' +
       '.lx-chant{text-align:center;font-family:"Amiri",serif;font-size:1.4rem;color:#0f4d3c;background:#e9f4ee;border-radius:12px;padding:8px}';
     document.head.appendChild(st);
   })();
@@ -163,25 +166,25 @@
     var x = cur.s[cur.i], u = cur.u, h = '';
     cur.tried = false; cur.sel = [];
     document.getElementById('lxBar').style.width = Math.round(cur.i * 100 / (cur.s.length - 1)) + '%';
-    document.getElementById('lxN').textContent = (x.t === 'end' || /^intro/.test(x.t)) ? '' : cur.i + ' / ' + (cur.s.length - 2);
+    document.getElementById('lxN').textContent = (x.t === 'end' || /^intro/.test(x.t)) ? '' : ar(cur.i + ' / ' + (cur.s.length - 2));
     if (x.t === 'introL') {
-      h += '<div class="lx-q">تَعَرَّفْ عَلَى ' + esc(u.title) + ' <span class="muted" style="font-weight:400">· 📕 ص ' + esc(u.pages) + '</span></div>';
+      h += '<div class="lx-q">تَعَرَّفْ عَلَى ' + esc(u.title) + ' <span class="muted" style="font-weight:400">· 📕 ص ' + ar(esc(u.pages)) + '</span></div>';
       h += '<div class="lx-forms">' + u.forms.map(function (f, i) { return '<span>' + esc(f) + '<small>' + ['مُنْفَصِل', 'أَوَّل', 'وَسَط', 'آخِر'][i] + '</small></span>'; }).join('') + '</div>';
       GROUPS.forEach(function (g, gi) {
         h += '<div class="lx-row"><h5><span class="mk">' + esc(u.marks[gi]) + '</span> ' + esc(u.letter) + ' ' + MK_NAME[gi] + '</h5><div class="lx-cards">' +
-          u.words[g].map(function (w) { return '<button class="lx-card" type="button" data-say="' + esc(w[0]) + '"><span class="e">' + w[1] + '</span><span class="w">' + esc(w[0]) + '</span><span class="n">' + esc(w[2]) + '</span></button>'; }).join('') + '</div></div>';
+          u.words[g].map(function (w) { return '<button class="lx-card" type="button" data-say="' + esc(w[0]) + '"><span class="e">' + pic(w[1]) + '</span><span class="w">' + esc(w[0]) + '</span><span class="n">' + esc(w[2]) + '</span></button>'; }).join('') + '</div></div>';
       });
       if (u.chant) h += '<div class="lx-chant">🎵 ' + esc(u.chant) + ' ' + spk(u.chant.replace(/\.\.\./g, '،')) + '</div>';
       h += '<p class="muted" style="font-size:.85rem">' + (nl() ? 'Tik op een woord om het te horen.' : 'اضْغَطْ عَلَى أَيِّ كَلِمَةٍ لِتَسْمَعَهَا.') + '</p>';
       h += '<button class="lx-next" type="button" data-lx="next">' + (nl() ? 'Start de oefeningen ▶' : 'ابْدَأِ التَّمَارِينَ ▶') + '</button>';
     } else if (x.t === 'introG') {
-      h += '<div class="lx-q">' + esc(u.title) + ' <span class="muted" style="font-weight:400">· 📕 ص ' + esc(u.pages) + '</span></div>';
+      h += '<div class="lx-q">' + esc(u.title) + ' <span class="muted" style="font-weight:400">· 📕 ص ' + ar(esc(u.pages)) + '</span></div>';
       u.rule.forEach(function (r) { h += '<div class="lx-rule"><b>' + esc(r[0]) + '</b>' + esc(r[1]) + (r[2] ? '<div class="nl">' + esc(r[2]) + '</div>' : '') + '</div>'; });
       if (u.tip) h += '<div class="lx-tip">💡 ' + esc(u.tip) + '</div>';
-      h += '<div class="lx-cards">' + u.examples.map(function (e) { return '<button class="lx-card" type="button" data-say="' + esc(e[0]) + '"><span class="e">' + e[1] + '</span><span class="w">' + esc(e[0]) + '</span></button>'; }).join('') + '</div>';
+      h += '<div class="lx-cards">' + u.examples.map(function (e) { return '<button class="lx-card" type="button" data-say="' + esc(e[0]) + '"><span class="e">' + pic(e[1]) + '</span><span class="w">' + esc(e[0]) + '</span></button>'; }).join('') + '</div>';
       h += '<button class="lx-next" type="button" data-lx="next">' + (nl() ? 'Start de oefeningen ▶' : 'ابْدَأِ التَّمَارِينَ ▶') + '</button>';
     } else if (x.t === 'mcq') {
-      h += '<div class="lx-q">' + esc(x.q) + '</div><div class="lx-pic">' + x.e + '</div>';
+      h += '<div class="lx-q">' + esc(x.q) + '</div><div class="lx-pic">' + pic(x.e) + '</div>';
       if (x.html) h += '<div class="lx-word">' + x.html + (x.say ? spk(x.say) : '') + '</div>';
       h += '<div class="lx-opts">' + x.opts.map(function (o, i) { return '<button class="lx-opt' + (x.small ? ' sm' : '') + '" type="button" data-opt="' + i + '">' + esc(o) + '</button>'; }).join('') + '</div>';
       h += '<div class="lx-fb" id="lxFb"></div><button class="lx-next" type="button" data-lx="next" disabled>' + (nl() ? 'Volgende ◀' : 'التَّالِي ◀') + '</button>';
@@ -192,7 +195,7 @@
     } else if (x.t === 'order') {
       x.sh = shuffle(x.toks.map(function (t, i) { return i; }));
       if (x.sh.join() === x.toks.map(function (t, i) { return i; }).join() && x.toks.length > 1) x.sh.reverse();
-      h += '<div class="lx-q">' + esc(x.q) + '</div><div class="lx-pic">' + x.e + ' ' + spk(x.say) + '</div><div class="lx-slots" id="lxSl"></div>';
+      h += '<div class="lx-q">' + esc(x.q) + '</div><div class="lx-pic">' + pic(x.e) + ' ' + spk(x.say) + '</div><div class="lx-slots" id="lxSl"></div>';
       h += '<div class="lx-toks">' + x.sh.map(function (ti, k) { return '<button class="lx-tok" type="button" data-tok="' + k + '">' + esc(x.toks[ti]) + '</button>'; }).join('') + '</div>';
       h += '<div class="lx-fb" id="lxFb"></div><button class="lx-next" type="button" data-lx="next" disabled>' + (nl() ? 'Volgende ◀' : 'التَّالِي ◀') + '</button>';
     } else if (x.t === 'bub') {
@@ -204,7 +207,7 @@
       cur.stars = stars;
       h += '<div class="lx-end"><div class="st">' + '⭐'.repeat(stars) + '<span style="opacity:.25">' + '⭐'.repeat(3 - stars) + '</span></div>' +
         '<h3>' + (stars === 3 ? 'مُمْتَاز! أَحْسَنْتَ 🎉' : stars === 2 ? 'جَيِّدٌ جِدًّا! 👏' : 'أَحْسَنْتَ المُحَاوَلَةَ 💪') + '</h3>' +
-        '<p>' + (nl() ? 'Goede antwoorden: ' : 'الإِجَابَاتُ الصَّحِيحَةُ مِنَ المَرَّةِ الأُولَى: ') + '<b>' + cur.ok + '</b> / ' + cur.tot + '</p>' +
+        '<p>' + (nl() ? 'Goede antwoorden: ' : 'الإِجَابَاتُ الصَّحِيحَةُ مِنَ المَرَّةِ الأُولَى: ') + '<b>' + ar(cur.ok) + '</b> / ' + ar(cur.tot) + '</p>' +
         '<button class="lx-next" type="button" data-lx="again" style="background:#fff;color:#0f4d3c;border:2px solid #0f4d3c;box-shadow:none">' + (nl() ? 'Opnieuw 🔁' : 'أَعِدِ التَّمَارِينَ 🔁') + '</button>' +
         '<button class="lx-next" type="button" data-lx="close">' + (nl() ? 'Klaar ✓' : 'إِنْهَاء ✓') + '</button></div>';
       if (cur.opts.onDone) cur.opts.onDone(cur.ok, cur.tot, stars);
@@ -283,7 +286,7 @@
     if (u.level === 1) {
       h += '<h2>١. تَتَبَّعْ أَشْكَالَ الحَرْفِ:</h2><div class="tr">' + u.forms.map(function (f) { return '<span>' + esc(f) + '</span>'; }).join('') + '</div>';
       h += '<h2>٢. تَتَبَّعْ ثُمَّ اكْتُبْ:</h2>' + u.marks.map(function (m) { return '<div class="ln"><span class="g">' + esc(m) + '</span><span class="g">' + esc(m) + '</span><span class="g">' + esc(m) + '</span></div>'; }).join('');
-      h += '<h2>٣. انْسَخِ الكَلِمَاتِ:</h2>' + GROUPS.map(function (g) { var w = u.words[g][0]; return '<div class="ln"><span>' + w[1] + ' ' + esc(w[0]) + '</span></div>'; }).join('');
+      h += '<h2>٣. انْسَخِ الكَلِمَاتِ:</h2>' + GROUPS.map(function (g) { var w = u.words[g][0]; return '<div class="ln"><span>' + (/^[\u0660-\u0669]+$/.test(w[1]) ? '' : w[1] + ' ') + esc(w[0]) + '</span></div>'; }).join('');
     } else {
       h += u.rule.map(function (r) { return '<p><b style="font-family:Amiri;font-size:18pt;color:#0f4d3c">' + esc(r[0]) + '</b> ' + esc(r[1]) + '</p>'; }).join('');
       h += '<h2>انْسَخِ الجُمَلَ بِخَطٍّ جَمِيلٍ:</h2>' + u.examples.map(function (e) { return '<div class="ln"><span>' + e[1] + ' ' + esc(e[0]) + '</span></div><div class="ln"></div>'; }).join('');
