@@ -109,6 +109,9 @@
       <textarea id="text" placeholder="فقرة قصيرة يقرؤها ولي الأمر مع طفله."></textarea>
       <label for="video">رابط فيديو (اختياري — YouTube)</label>
       <input id="video" dir="ltr" placeholder="https://www.youtube.com/watch?v=…">
+      <label for="lang">🔤 وحدة اللغة العربية (اختياري)</label>
+      <select id="lang"></select>
+      <div class="hint">تمارين تفاعلية بترتيب الكتاب المدرسي. <a id="langPrev" href="/lang.html" target="_blank" rel="noopener">معاينة الوحدات ↗</a></div>
       <details id="nlBox" style="margin-top:14px"><summary>🇳🇱 الترجمة الهولندية (تلقائية — يمكنك تعديلها)</summary>
         <p class="hint">اتركها فارغة وستُترجم تلقائياً عند الحفظ. بعد الحفظ اضغط «تعديل» لترى الترجمة وتصحّحها إن أردت.</p>
         <label for="homeworkNl">Huiswerk</label><textarea id="homeworkNl" dir="ltr"></textarea>
@@ -143,6 +146,7 @@
 <footer class="wrap"><a href="/portal.html">بوابة أولياء الأمور</a> · <a href="/">الصفحة الرئيسية</a></footer>
 
 <script src="/q.js"></script>
+<script src="/lang-data.js"></script>
 <script>
 var CLIENT_ID = '245259754538-snhtq8dl043apofpnsg1c9ihnlsmslh8.apps.googleusercontent.com';
 var API_URL   = 'https://script.google.com/macros/s/AKfycbz0SWv9GEW0fZg3ZYK_D5MAnx4cjc0Y8_Wfx_EydxjNKcKvpnCTUqCKw-IbWif-uOg/exec';
@@ -171,6 +175,16 @@ function syncAyahs(reset){
   $('ayHint').textContent='سورة '+SURAHS[s-1]+': '+max+' آية';
 }
 $('surah').addEventListener('change',function(){syncAyahs(true)});
+/* language units, in book order per level */
+(function(){
+  var U=window.LANG_UNITS||{}, ids=Object.keys(U), h='<option value="">— بدون —</option>';
+  [[1,'المستوى الأول — معلم القراءة والكتابة (الجزء الأول)'],[2,'المستوى الثاني — قواعد وأساليب وتراكيب (الجزء الثاني)']].forEach(function(g){
+    h+='<optgroup label="'+g[1]+'">'+ids.filter(function(i){return U[i].level===g[0]}).sort(function(a,b){return U[a].order-U[b].order})
+      .map(function(i){return '<option value="'+i+'">'+U[i].title+' · ص '+U[i].pages+'</option>'}).join('')+'</optgroup>';
+  });
+  $('lang').innerHTML=h;
+  $('lang').addEventListener('change',function(){ $('langPrev').href='/lang.html'+(this.value?'?u='+encodeURIComponent(this.value):''); });
+})();
 /* Arabic text changed → old Dutch translation is out of date: clear it so it is translated again on save */
 ['homework','topic','text'].forEach(function(f){$(f).addEventListener('input',function(){$(f+'Nl').value=''})});
 
@@ -187,7 +201,7 @@ $('f').addEventListener('submit',function(ev){
   if(s){ var max=AYAHS[s-1]; if(!(fr>=1&&to>=fr&&to<=max)){ $('formMsg').className='msg err'; $('formMsg').textContent='نطاق الآيات غير صحيح (1 إلى '+max+').'; return; } }
   if(!s&&!$('homework').value.trim()&&!$('topic').value.trim()){ $('formMsg').className='msg err'; $('formMsg').textContent='اكتب سورة أو واجباً أو موضوعاً على الأقل.'; return; }
   var L={id:$('id').value,date:$('date').value,group:$('group').value,surah:s||'',from:s?fr:'',to:s?to:'',
-    homework:$('homework').value,topic:$('topic').value,text:$('text').value,video:$('video').value.trim(),
+    homework:$('homework').value,topic:$('topic').value,text:$('text').value,video:$('video').value.trim(),lang:$('lang').value,
     homeworkNl:$('homeworkNl').value,topicNl:$('topicNl').value,textNl:$('textNl').value};
   $('saveBtn').disabled=true; $('formMsg').className='msg'; $('formMsg').textContent='جارٍ الحفظ…';
   api({action:'saveLesson',lesson:L}).then(function(d){
@@ -209,6 +223,7 @@ function lessonCard(l,i,cur){
     (l.date>today()?'<span class="tag" style="background:#e8f0fb;color:#2b5aa0">مجدول — لم يظهر بعد</span>':'')+
     '<div style="margin-top:6px"><b>'+esc(sur)+'</b>'+(l.topic?(sur?' · ':'')+'🕌 '+esc(l.topic):'')+'</div>'+
     (l.homework?'<div class="muted" style="white-space:pre-line">✏️ '+esc(l.homework)+'</div>':'')+
+    (l.lang&&window.LANG_UNITS&&LANG_UNITS[l.lang]?'<div style="margin-top:4px">🔤 '+esc(LANG_UNITS[l.lang].title)+' <span class="muted">(ص '+esc(LANG_UNITS[l.lang].pages)+')</span></div>':'')+
     (l.video?'<a class="vlink" href="'+esc(l.video)+'" target="_blank" rel="noopener">▶ فتح الفيديو</a>':'')+'</div>'+
     '<div style="display:flex;gap:6px"><button class="btn sec small" data-edit="'+i+'" type="button">تعديل</button>'+
     '<button class="btn red small" data-del="'+i+'" type="button">حذف</button></div></div>'+
@@ -268,7 +283,7 @@ document.addEventListener('click',function(e){
   }
   $('id').value=l.id; $('date').value=l.date; $('group').value=l.group||'all'; $('surah').value=l.surah||'';
   syncAyahs(false); $('from').value=l.from||''; $('to').value=l.to||''; if(l.surah) syncAyahs(false);
-  $('homework').value=l.homework||''; $('topic').value=l.topic||''; $('text').value=l.text||''; $('video').value=l.video||'';
+  $('homework').value=l.homework||''; $('topic').value=l.topic||''; $('text').value=l.text||''; $('video').value=l.video||''; $('lang').value=l.lang||'';
   $('homeworkNl').value=l.homeworkNl||''; $('topicNl').value=l.topicNl||''; $('textNl').value=l.textNl||'';
   $('formTitle').textContent='تعديل درس '+fmt(l.date); $('cancelBtn').classList.remove('hidden'); $('formMsg').textContent='';
   [].forEach.call(document.querySelectorAll('.lesson.editing'),function(x){x.classList.remove('editing')});
