@@ -41,7 +41,7 @@ else{
   var h='';
   [[1,'المستوى الأول — معلم القراءة والكتابة (الجزء الأول)'],[2,'المستوى الثاني — قواعد وأساليب وتراكيب (الجزء الثاني)']].forEach(function(g){
     h+='<h2>'+g[1]+'</h2>'+ids.filter(function(i){return U[i].level===g[0]}).sort(function(a,b){return U[a].order-U[b].order}).map(function(i){
-      return '<div class="u"><b>'+U[i].title+'</b><span class="p">ص '+U[i].pages+'</span><button class="go" data-go="'+i+'">▶ ابدأ</button><a class="pr" href="?u='+encodeURIComponent(i)+'&print=1" target="_blank">🖨️</a></div>';
+      return '<div class="u"><b>'+U[i].title+'</b><span class="p">ص '+U[i].pages.replace(/\d/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d]})+'</span><button class="go" data-go="'+i+'">▶ ابدأ</button><a class="pr" href="?u='+encodeURIComponent(i)+'&print=1" target="_blank">🖨️</a></div>';
     }).join('');
   });
   document.getElementById('list').innerHTML=h;
