@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تمارين اللغة العربية | Al-Furqan Academie</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--green:#0f4d3c;--gold:#c9a24a;--muted:#5b6b66;--line:#e7dfcc;--paper:#fbf8f1}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:#1d2a26;font-family:"Noto Naskh Arabic","Inter",system-ui,sans-serif;font-size:17px;line-height:1.8}
+  .wrap{max-width:760px;margin:0 auto;padding:0 12px}
+  header{border-bottom:1px solid var(--line);background:#fff}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:58px}
+  header a{color:var(--green);text-decoration:none;font-family:Amiri,serif;font-size:1.25rem;font-weight:700}
+  h1{font-family:Amiri,serif;color:var(--green);margin:20px 0 4px}
+  .muted{color:var(--muted);font-size:.92rem}
+  h2{font-size:1.1rem;color:var(--green);margin:22px 0 8px}
+  .u{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0}
+  .u b{flex:1}.u .p{font:600 .8rem Inter,sans-serif;color:var(--muted)}
+  .u button,.u a{border:0;border-radius:999px;padding:6px 14px;font:700 .9rem inherit;font-family:inherit;cursor:pointer;text-decoration:none}
+  .go{background:var(--gold);color:#1d1a10}.pr{background:#fff;color:var(--green);border:1.5px solid var(--green)!important}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="/">✦ أكاديمية الفرقان</a><a href="/portal.html" style="font-family:inherit;font-size:.9rem">بوابة أولياء الأمور</a></div></header>
+<main class="wrap">
+  <h1>🔤 تمارين اللغة العربية</h1>
+  <p class="muted">تمارين تفاعلية تتبع ترتيب الكتاب المدرسي. محتوى التمارين والأمثلة من إعداد الأكاديمية.</p>
+  <div id="list"></div>
+</main>
+<script src="/lang-data.js"></script>
+<script src="/lang.js"></script>
+<script>
+var U=window.LANG_UNITS||{}, ids=Object.keys(U), q=new URLSearchParams(location.search), id=q.get('u');
+if(id&&U[id]&&q.get('print')){ document.open(); document.write(LangRun.printSheet(id)); document.close(); }
+else{
+  var h='';
+  [[1,'المستوى الأول — معلم القراءة والكتابة (الجزء الأول)'],[2,'المستوى الثاني — قواعد وأساليب وتراكيب (الجزء الثاني)']].forEach(function(g){
+    h+='<h2>'+g[1]+'</h2>'+ids.filter(function(i){return U[i].level===g[0]}).sort(function(a,b){return U[a].order-U[b].order}).map(function(i){
+      return '<div class="u"><b>'+U[i].title+'</b><span class="p">ص '+U[i].pages+'</span><button class="go" data-go="'+i+'">▶ ابدأ</button><a class="pr" href="?u='+encodeURIComponent(i)+'&print=1" target="_blank">🖨️</a></div>';
+    }).join('');
+  });
+  document.getElementById('list').innerHTML=h;
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)LangRun.open(b.dataset.go);});
+  if(id&&U[id]) LangRun.open(id);
+}
+</script>
+</body>
+</html>
