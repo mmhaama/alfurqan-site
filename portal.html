@@ -214,7 +214,11 @@ var T = {
               network:'Geen verbinding. Probeer het opnieuw.',other:'Er ging iets mis. Probeer het opnieuw of stuur ons een WhatsApp.'}}
 };
 
-var lang='ar', token=null, lastData=null;
+var lang='ar', token=null, lastData=null, sess=null;
+try{ sess=localStorage.getItem('sess'); }catch(e){}
+/* every request is signed with the 90-day session (or, the very first time, the Google token) */
+function authBody(p){ if(sess) p.session=sess; else if(token) p.idToken=token; else return false; return true; }
+function keepSession(d){ if(d&&d.session&&d.session!==sess){ sess=d.session; try{localStorage.setItem('sess',sess)}catch(e){} } return d; }
 function t(){return T[lang]}
 function $(id){return document.getElementById(id)}
 function digits(s){return String(s||'').replace(/[\u0660-\u0669]/g,function(c){return c.charCodeAt(0)-0x660}).replace(/[\u06F0-\u06F9]/g,function(c){return c.charCodeAt(0)-0x6F0}).replace(/\D/g,'')}
@@ -235,9 +239,10 @@ function rating(score){
 }
 
 function api(payload){
-  payload.idToken=token;
+  authBody(payload);
   return fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}) // text/plain → no CORS preflight
     .then(function(r){return r.json()})
+    .then(keepSession)
     .catch(function(){return {ok:false,error:'network'}});
 }
 
@@ -287,12 +292,15 @@ function onCredential(resp){
 }
 
 function load(){
-  api({action:'me'}).then(function(d){ if(d.ok) render(d); else showError(d.error); });
+  api({action:'me'}).then(function(d){
+    if(d.ok){ delete d.session; try{localStorage.setItem('pcache',JSON.stringify(d))}catch(e){} render(d); }
+    else if(!(d.error==='network'&&lastData)) showError(d.error);
+  });
 }
 
 function signOut(){
-  token=null; lastData=null;
-  try{sessionStorage.removeItem('tok')}catch(e){}
+  token=null; lastData=null; sess=null;
+  try{sessionStorage.removeItem('tok');localStorage.removeItem('sess');localStorage.removeItem('pcache')}catch(e){}
   if(window.google&&google.accounts) google.accounts.id.disableAutoSelect();
   $('kids').classList.add('hidden'); $('link').classList.add('hidden'); $('teacher').classList.add('hidden'); $('teacher2').classList.add('hidden');
   $('signin').classList.remove('hidden'); $('outBtn').classList.add('hidden');
@@ -315,7 +323,12 @@ $('langBtn').addEventListener('click',function(){setLang(lang==='nl'?'ar':'nl')}
   var start='ar'; try{start=localStorage.getItem('lang')||'ar'}catch(e){}
   setLang(start);
   try{token=sessionStorage.getItem('tok')}catch(e){}
-  if(token){ $('signin').classList.add('hidden'); $('outBtn').classList.remove('hidden'); load(); }
+  if(sess||token){
+    $('signin').classList.add('hidden'); $('outBtn').classList.remove('hidden');
+    /* show the last known page at once, then refresh it from the server */
+    try{ var c=JSON.parse(localStorage.getItem('pcache')||'null'); if(c&&c.ok) render(c); }catch(e){}
+    load();
+  }
   (function waitGsi(){
     if(!(window.google&&google.accounts&&google.accounts.id)) return setTimeout(waitGsi,150);
     google.accounts.id.initialize({client_id:CLIENT_ID,callback:onCredential});
