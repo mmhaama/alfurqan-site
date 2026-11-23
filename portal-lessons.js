@@ -1,6 +1,11 @@
 /* Al-Furqan Academie – lesson of the week, Quran player and celebrations (used by portal.html) */
 (function () {
   var QTEXT = 'https://api.alquran.cloud/v1/surah/';
+  /* Uthmani text from Quran.com, written for the King Fahd Complex (Madinah Mushaf) Hafs font */
+  var QC = 'https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=';
+  var HAFS_FONT = 'https://cdn.jsdelivr.net/gh/mustafa0x/qpc-fonts@f93bf5f3/various-woff2/UthmanicHafs1%20Ver09.woff2';
+  var BSM_HAFS = '\u0628\u0650\u0633\u0652\u0645\u0650 \u0671\u0644\u0644\u0651\u064e\u0647\u0650 \u0671\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0640\u0670\u0646\u0650 \u0671\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650';
+  function arNum(n) { return String(n).replace(/\d/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'[d]; }); }
   var RECITERS = [
     { id: 'ar.husary', ar: 'الحصري', nl: 'Al-Husary' },
     { id: 'ar.alafasy', ar: 'العفاسي', nl: 'Alafasy' },
@@ -32,7 +37,11 @@
   function tr(l, f) { return lang === 'nl' && l[f + 'Nl'] ? l[f + 'Nl'] : (l[f] || ''); }
   (function () {
     var st = document.createElement('style');
-    st.textContent = '.quran.nlm{text-align:right}.ayrow{padding:6px 0;border-bottom:1px dashed #e7dfcc}.ayrow:last-child{border-bottom:0}' +
+    st.textContent = "@font-face{font-family:'UthmanicHafs';src:url('" + HAFS_FONT + "') format('woff2');font-display:swap}" +
+      ".quran.hf,.hf .bsm{font-family:'UthmanicHafs','Amiri Quran',serif}.quran.hf{font-size:1.75rem;line-height:2.25}" +
+      ".quran.hf .an{border:0;min-width:0;height:auto;margin:0 3px;font:inherit;font-family:'UthmanicHafs',serif;color:#0f4d3c;vertical-align:baseline}" +
+      "@media(max-width:600px){.quran.hf{font-size:1.65rem;text-align:justify}}" +
+      '.quran.nlm{text-align:right}.ayrow{padding:6px 0;border-bottom:1px dashed #e7dfcc}.ayrow:last-child{border-bottom:0}' +
       '.nltr{direction:ltr;text-align:left;font-family:Inter,system-ui,sans-serif;font-size:.95rem;line-height:1.6;color:#3d4b47;margin:2px 0 4px}' +
       '.nltr b{color:#8a6510;margin-right:6px}.trsrc{font-size:.75rem;color:#8a9692;margin-top:6px;direction:ltr;text-align:left}' +
       '.prac{display:flex;align-items:center;gap:14px;margin-top:12px;background:#fff;border:1px solid #e7dfcc;border-radius:14px;padding:10px 14px}' +
@@ -188,10 +197,16 @@
   var qCache = {};
   function loadSurah(n) {
     if (qCache[n]) return qCache[n];
-    qCache[n] = fetch(QTEXT + n + '/editions/quran-uthmani,nl.siregar').then(function (r) { return r.json(); }).then(function (d) {
+    var tz = fetch(QTEXT + n + '/editions/quran-uthmani,nl.siregar').then(function (r) { return r.json(); });
+    var qc = fetch(QC + n).then(function (r) { return r.json(); }).catch(function () { return null; });
+    qCache[n] = Promise.all([tz, qc]).then(function (res) {
+      var d = res[0], q = res[1];
       if (!d || d.code !== 200 || !d.data || !d.data[0]) throw new Error('q');
-      var nl = (d.data[1] && d.data[1].ayahs) || [];
-      return d.data[0].ayahs.map(function (a, i) { return { n: a.numberInSurah, g: a.number, t: a.text, nl: nl[i] ? nl[i].text : '' }; });
+      var nl = (d.data[1] && d.data[1].ayahs) || [], ar = d.data[0].ayahs;
+      var hv = q && q.verses && q.verses.length === ar.length ? q.verses : null;
+      var list = ar.map(function (a, i) { return { n: a.numberInSurah, g: a.number, t: hv ? hv[i].text_uthmani : a.text, nl: nl[i] ? nl[i].text : '' }; });
+      list.hafs = !!hv;
+      return list;
     });
     qCache[n].catch(function () { delete qCache[n]; });
     return qCache[n];
@@ -201,16 +216,17 @@
     var s = +el.dataset.s, f = +el.dataset.f, to = +el.dataset.t;
     loadSurah(s).then(function (ayahs) {
       var h = '';
-      if (f === 1 && s !== 1 && s !== 9) h += '<div class="bsm">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>';
+      var hf = !!ayahs.hafs;
+      if (f === 1 && s !== 1 && s !== 9) h += '<div class="bsm">' + (hf ? BSM_HAFS : 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ') + '</div>';
       var nlm = lang === 'nl';
       ayahs.forEach(function (a) {
         if (a.n < f || a.n > to) return;
-        var txt = (a.n === 1 && s !== 1 && s !== 9) ? a.t.replace(BSM, '') : a.t;
-        var ar = '<span class="ay" data-g="' + a.g + '" data-n="' + a.n + '">' + esc(txt) + '</span><span class="an">' + a.n + '</span> ';
+        var txt = (!hf && a.n === 1 && s !== 1 && s !== 9) ? a.t.replace(BSM, '') : a.t;
+        var ar = '<span class="ay" data-g="' + a.g + '" data-n="' + a.n + '">' + esc(txt) + '</span><span class="an">' + (hf ? arNum(a.n) : a.n) + '</span> ';
         h += nlm ? '<div class="ayrow">' + ar + (a.nl ? '<div class="nltr"><b>' + a.n + '.</b>' + esc(a.nl) + '</div>' : '') + '</div>' : ar;
       });
       if (nlm) h += '<div class="trsrc">Vertaling: Sofian S. Siregar</div>';
-      el.classList.toggle('nlm', nlm);
+      el.classList.toggle('nlm', nlm); el.classList.toggle('hf', hf);
       el.innerHTML = h;
     }).catch(function () { el.innerHTML = '<span class="muted" style="font-size:.9rem">' + esc(w().qErr) + '</span>'; });
   }
