@@ -143,6 +143,7 @@
     .panel{margin-left:-10px;margin-right:-10px;border-radius:0;border-left:0;border-right:0;padding:12px 10px}
     th,td{padding:8px 4px}table{font-size:.9rem}
     .ctrl select{font-size:.85rem;padding:5px 6px}
+    .tabs{gap:3px;padding:3px}.tabs button{font-size:.84rem;padding:8px 2px}
   }
   footer{padding:30px 0 40px;color:var(--muted);font-size:.9rem;text-align:center}
   footer a{color:var(--green-2)}
@@ -323,13 +324,14 @@ function kidHtml(k,multi,L){
   if(!a.total) att='<div class="att"><b>'+esc(L.attendance)+'</b><p class="muted" style="margin:4px 0 0">'+esc(L.noAtt)+'</p></div>';
   else att='<div class="att"><b>'+esc(L.attendance)+': <bdi>'+a.attended+'</bdi>'+esc(L.of)+'<bdi>'+a.total+'</bdi>'+esc(L.lessons)+'</b><div class="days">'+
     a.recent.map(function(x){var p=x.d.split('-');return '<span class="day '+(x.p?'p':'a')+'" title="'+esc(x.p?L.present:L.absent)+'">'+(x.p?'✓ ':'✗ ')+p[2]+'/'+p[1]+'</span>';}).join('')+'</div></div>';
-  var tabs=[['lesson',nl?'📖 Les':'📖 الدرس'],['res',nl?'⭐ Resultaten':'⭐ النتائج'],['att',nl?'📅 Aanwezig':'📅 الحضور']];
+  var tabs=[['lesson',nl?'📖 Les':'📖 الدرس'],['lib',nl?'📚 Archief':'📚 مكتبتي'],['res',nl?'⭐ Cijfers':'⭐ النتائج'],['att',nl?'📅 Aanwezig':'📅 الحضور']];
   return '<div class="kpage"><div class="kbar">'+
       (multi?'<a class="kback" href="#">'+esc(nl?'‹ Kinderen':'→ أطفالي')+'</a>':'')+
       '<div class="kname"><b>'+esc(k.name)+'</b>'+(k.group?'<span class="muted">'+esc(L.group+k.group)+'</span>':'')+'</div>'+
       '<div class="kidtop" style="margin:0;flex-wrap:nowrap">'+starChips(k)+'</div></div>'+
     '<div class="tabs" role="tablist">'+tabs.map(function(t){return '<button type="button" data-tab="'+t[0]+'"'+(curTab===t[0]?' class="on"':'')+'>'+esc(t[1])+'</button>';}).join('')+'</div>'+
     '<div class="tabp'+(curTab==='lesson'?'':' hidden')+'" id="tp_lesson">'+(window.lessonHtml?lessonHtml(k):'')+'</div>'+
+    '<div class="tabp'+(curTab==='lib'?'':' hidden')+'" id="tp_lib">'+(window.libraryHtml?libraryHtml(k):'')+'</div>'+
     '<div class="tabp'+(curTab==='res'?'':' hidden')+'" id="tp_res"><div class="panel"><div class="kpay" style="margin:0 0 10px">'+payChip(k,L)+'</div>'+
       (rows?'<table><thead><tr><th>'+L.month+'</th><th>'+L.score+'</th><th>'+L.rating+'</th><th>'+L.note+'</th></tr></thead><tbody>'+rows+'</tbody></table>'
            :'<p class="muted" style="margin:0">'+esc(L.noResults)+'</p>')+'</div></div>'+
@@ -358,7 +360,7 @@ document.addEventListener('click',function(e){
   var b=e.target.closest('[data-tab]'); if(!b) return;
   curTab=b.dataset.tab;
   [].forEach.call(document.querySelectorAll('[data-tab]'),function(x){x.classList.toggle('on',x===b)});
-  ['lesson','res','att'].forEach(function(n){ var p=$('tp_'+n); if(p) p.classList.toggle('hidden',n!==curTab); });
+  ['lesson','lib','res','att'].forEach(function(n){ var p=$('tp_'+n); if(p) p.classList.toggle('hidden',n!==curTab); });
 });
 
 function onCredential(resp){
