@@ -50,6 +50,12 @@
   th{color:var(--muted);font-weight:600;font-size:.85rem}
   .score{font-family:"Inter",sans-serif;font-weight:700;white-space:nowrap}
   @media(max-width:480px){.brand small{display:none}.brand b{font-size:1.15rem}}
+  .att{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+  .att b{font-size:1rem}
+  .days{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .day{font-family:"Inter",sans-serif;font-size:.78rem;border-radius:8px;padding:3px 8px;direction:ltr}
+  .day.p{background:var(--ok-bg);color:var(--ok)}
+  .day.a{background:#f6e3e1;color:#a3261b}
   .hidden{display:none!important}
   #gbtn{margin-top:10px;min-height:44px}
   footer{padding:30px 0 40px;color:var(--muted);font-size:.9rem;text-align:center}
@@ -73,8 +79,8 @@
 <main class="wrap">
   <h1><span data-l="ar">بوابة أولياء الأمور</span><span data-l="nl">Ouderportaal</span></h1>
   <p class="sub" id="who">
-    <span data-l="ar">تابع نتائج طفلك الشهرية وحالة الدفع للشهر الحالي.</span>
-    <span data-l="nl">Bekijk de maandresultaten van uw kind en de betaalstatus van deze maand.</span>
+    <span data-l="ar">تابع نتائج طفلك الشهرية وحضوره وحالة الدفع للشهر الحالي.</span>
+    <span data-l="nl">Bekijk de maandresultaten en aanwezigheid van uw kind en de betaalstatus van deze maand.</span>
   </p>
 
   <!-- 1. sign in -->
@@ -122,6 +128,7 @@ var API_URL   = 'https://script.google.com/macros/s/AKfycbz0SWv9GEW0fZg3ZYK_D5MA
 var T = {
   ar:{monthNames:{Sep:'سبتمبر',Okt:'أكتوبر',Nov:'نوفمبر',Dec:'ديسمبر',Jan:'يناير',Feb:'فبراير',Mrt:'مارس',Apr:'أبريل',Mei:'مايو',Jun:'يونيو'},
       paid:'تم دفع شهر ', unpaid:'لم يُسجَّل دفع شهر ', summer:'لا دروس هذا الشهر', group:'المجموعة ',
+      attendance:'الحضور', of:' من ', lessons:' درس', noAtt:'لم يُسجَّل حضور بعد.', present:'حاضر', absent:'غائب',
       month:'الشهر', score:'الدرجة', rating:'التقدير', note:'ملاحظة المعلم', noResults:'لا توجد نتائج بعد.',
       ratings:['يحتاج متابعة','مقبول','جيد','جيد جداً','ممتاز'], signedIn:'مسجّل الدخول بـ ',
       none:'لا يوجد أطفال مربوطون بهذا الحساب بعد.', linked:'تم الربط بنجاح.', addMore:'ربط طفل آخر',
@@ -130,6 +137,7 @@ var T = {
               network:'تعذّر الاتصال. حاول مرة أخرى.',other:'حدث خطأ. حاول مرة أخرى أو راسلنا على واتساب.'}},
   nl:{monthNames:{Sep:'september',Okt:'oktober',Nov:'november',Dec:'december',Jan:'januari',Feb:'februari',Mrt:'maart',Apr:'april',Mei:'mei',Jun:'juni'},
       paid:'Betaald: ', unpaid:'Nog niet betaald: ', summer:'Geen lessen deze maand', group:'Groep ',
+      attendance:'Aanwezigheid', of:' van ', lessons:' lessen', noAtt:'Nog geen aanwezigheid geregistreerd.', present:'aanwezig', absent:'afwezig',
       month:'Maand', score:'Cijfer', rating:'Beoordeling', note:'Opmerking docent', noResults:'Nog geen resultaten.',
       ratings:['Extra aandacht nodig','Voldoende','Goed','Zeer goed','Uitstekend'], signedIn:'Ingelogd als ',
       none:'Er zijn nog geen kinderen aan dit account gekoppeld.', linked:'Gekoppeld.', addMore:'Nog een kind koppelen',
@@ -184,10 +192,14 @@ function render(data){
       return '<tr><td>'+esc(L.monthNames[r.month]||r.month)+'</td><td class="score">'+(r.score==null?'–':'<bdi dir="ltr">'+esc(r.score)+'/10</bdi>')+
              '</td><td>'+esc(rating(r.score))+'</td><td>'+esc(r.note)+'</td></tr>';
     }).join('');
+    var a=k.attendance||{total:0,recent:[]}, att;
+    if(!a.total) att='<div class="att"><b>'+esc(L.attendance)+'</b><p class="muted" style="margin:4px 0 0">'+esc(L.noAtt)+'</p></div>';
+    else att='<div class="att"><b>'+esc(L.attendance)+': <bdi>'+a.attended+'</bdi>'+esc(L.of)+'<bdi>'+a.total+'</bdi>'+esc(L.lessons)+'</b><div class="days">'+
+      a.recent.map(function(x){var p=x.d.split('-');return '<span class="day '+(x.p?'p':'a')+'" title="'+esc(x.p?L.present:L.absent)+'">'+(x.p?'✓ ':'✗ ')+p[2]+'/'+p[1]+'</span>';}).join('')+'</div></div>';
     html+='<article class="card"><div class="child-head"><div><h2>'+esc(k.name)+'</h2>'+
           (k.group?'<div class="muted">'+esc(L.group+k.group)+'</div>':'')+'</div>'+badge+'</div>'+
           (rows?'<table><thead><tr><th>'+L.month+'</th><th>'+L.score+'</th><th>'+L.rating+'</th><th>'+L.note+'</th></tr></thead><tbody>'+rows+'</tbody></table>'
-               :'<p class="muted" style="margin:14px 0 0">'+esc(L.noResults)+'</p>')+'</article>';
+               :'<p class="muted" style="margin:14px 0 0">'+esc(L.noResults)+'</p>')+att+'</article>';
   });
   box.innerHTML=html; box.classList.remove('hidden');
   $('link').classList.remove('hidden');
