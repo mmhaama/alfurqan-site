@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>الدروس والواجبات | Al-Furqan Academie</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root{--green:#0f4d3c;--green-2:#14654f;--gold:#c9a24a;--gold-soft:#f3e7c6;--ink:#1d2a26;--muted:#5b6b66;
+    --paper:#fbf8f1;--card:#fff;--line:#e7dfcc;--ok:#1f7a4d;--ok-bg:#e3f3ea}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Naskh Arabic","Inter",system-ui,sans-serif;font-size:17px;line-height:1.75}
+  .wrap{max-width:860px;margin:0 auto;padding:0 18px}
+  header{border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--green)}
+  .brand svg{width:36px;height:36px}.brand b{font-family:"Amiri",serif;font-size:1.25rem}
+  .pill{border:1px solid var(--green);background:transparent;color:var(--green);border-radius:999px;padding:6px 14px;font:600 .85rem "Inter",sans-serif;cursor:pointer;text-decoration:none}
+  h1{font-family:"Amiri",serif;color:var(--green);font-size:2rem;margin:26px 0 4px}
+  .muted{color:var(--muted);font-size:.93rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin:16px 0}
+  .card h2{margin:0 0 6px;font-size:1.2rem}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+  @media(max-width:560px){.grid,.grid3{grid-template-columns:1fr 1fr}.grid3 .full{grid-column:1/-1}}
+  label{display:block;font-weight:700;font-size:.92rem;margin:12px 0 4px}
+  input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font:inherit;font-size:1rem;background:#fff}
+  textarea{min-height:84px;resize:vertical}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:999px;border:0;font-family:inherit;font-weight:700;font-size:1rem;cursor:pointer;background:var(--gold);color:#1d1a10}
+  .btn.sec{background:#fff;border:1.5px solid var(--green);color:var(--green)}
+  .btn.small{padding:5px 14px;font-size:.88rem}
+  .btn.red{background:#fff;border:1.5px solid #b23b2e;color:#b23b2e}
+  .btn:disabled{opacity:.6;cursor:wait}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+  .msg{font-size:.95rem}.msg.err{color:#a3261b}.msg.ok{color:var(--ok)}
+  .hidden{display:none!important}
+  .lesson{border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:12px 0;background:#fff}
+  .lesson.editing{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+  .lt{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start}
+  .tag{display:inline-block;background:var(--gold-soft);color:#7a5a10;border-radius:999px;padding:1px 10px;font-size:.82rem;font-weight:700;margin-inline-end:6px}
+  .bar2{height:10px;background:#eee;border-radius:99px;overflow:hidden;margin-top:8px}
+  .bar2 i{display:block;height:100%;background:linear-gradient(90deg,#2bb673,#1f8f5a)}
+  details summary{cursor:pointer;color:var(--green-2);font-weight:600;margin-top:8px}
+  .kids{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px 12px;margin-top:8px;font-size:.92rem}
+  .kids .y{color:var(--ok)}.kids .n{color:#9b9b9b}
+  .hint{font-size:.82rem;color:var(--muted);margin-top:2px}
+  #gbtn{min-height:44px;margin-top:8px}
+  footer{padding:24px 0 40px;text-align:center;color:var(--muted);font-size:.9rem}
+  footer a{color:var(--green-2)}
+</style>
+</head>
+<body>
+<header><div class="wrap bar">
+  <a class="brand" href="/"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3l6 14 15 6-15 6-6 15-6-15-15-6 15-6z" fill="#0f4d3c"/><circle cx="24" cy="23" r="6.5" fill="#c9a24a"/></svg><b>أكاديمية الفرقان</b></a>
+  <span style="display:flex;gap:8px"><a class="pill" href="/scan.html">📷 الحضور</a><a class="pill" href="/portal.html">البوابة</a></span>
+</div></header>
+
+<main class="wrap">
+  <h1>الدروس والواجبات</h1>
+  <p class="muted" style="margin:0">اكتب درس كل حصة هنا، فيظهر فوراً لأولياء أمور المجموعة في البوابة: السورة مع التلاوة، والواجب، وموضوع الأسبوع.</p>
+
+  <section class="card" id="signin">
+    <h2>تسجيل الدخول</h2>
+    <p class="muted">سجّل الدخول بحساب Google الخاص بالمعلم.</p>
+    <div id="gbtn"></div>
+  </section>
+
+  <div class="msg err" id="err"></div>
+
+  <section class="card hidden" id="formCard">
+    <h2 id="formTitle">درس جديد</h2>
+    <form id="f" autocomplete="off">
+      <input type="hidden" id="id">
+      <div class="grid">
+        <div><label for="date">تاريخ الحصة</label><input type="date" id="date" required></div>
+        <div><label for="group">المجموعة</label>
+          <select id="group"><option value="all">كل المجموعات</option><option value="1">المجموعة 1</option><option value="2">المجموعة 2</option></select></div>
+      </div>
+      <div class="grid3">
+        <div class="full"><label for="surah">السورة المطلوبة</label><select id="surah"></select></div>
+        <div><label for="from">من آية</label><input type="number" id="from" min="1" inputmode="numeric"></div>
+        <div><label for="to">إلى آية</label><input type="number" id="to" min="1" inputmode="numeric"></div>
+      </div>
+      <div class="hint" id="ayHint"></div>
+      <label for="homework">الواجب</label>
+      <textarea id="homework" placeholder="مثال: احفظ الآيات 1–3 من سورة الفيل، واكتب حرف الباء 5 مرات."></textarea>
+      <label for="topic">موضوع الأسبوع (اختياري)</label>
+      <input id="topic" placeholder="مثال: آداب الطعام">
+      <label for="text">شرح قصير للموضوع (اختياري)</label>
+      <textarea id="text" placeholder="فقرة قصيرة يقرؤها ولي الأمر مع طفله."></textarea>
+      <label for="video">رابط فيديو (اختياري — YouTube)</label>
+      <input id="video" dir="ltr" placeholder="https://www.youtube.com/watch?v=…">
+      <div class="actions">
+        <button class="btn" id="saveBtn" type="submit">💾 حفظ ونشر</button>
+        <button class="btn sec hidden" id="cancelBtn" type="button">إلغاء التعديل</button>
+        <span class="msg" id="formMsg"></span>
+      </div>
+    </form>
+  </section>
+
+  <section id="listCard" class="hidden">
+    <h2 style="margin:26px 0 0;font-size:1.2rem">الدروس المنشورة</h2>
+    <div id="list"></div>
+  </section>
+</main>
+
+<footer class="wrap"><a href="/portal.html">بوابة أولياء الأمور</a> · <a href="/">الصفحة الرئيسية</a></footer>
+
+<script src="/q.js"></script>
+<script>
+var CLIENT_ID = '245259754538-snhtq8dl043apofpnsg1c9ihnlsmslh8.apps.googleusercontent.com';
+var API_URL   = 'https://script.google.com/macros/s/AKfycbz0SWv9GEW0fZg3ZYK_D5MAnx4cjc0Y8_Wfx_EydxjNKcKvpnCTUqCKw-IbWif-uOg/exec';
+var token=null, lessons=[];
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function today(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+function fmt(d){var p=String(d).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d}
+var ERR={not_teacher:'هذا الحساب ليس من حسابات المعلمين.',session_expired:'انتهت الجلسة، سجّل الدخول مجدداً.',bad_date:'اختر تاريخ الحصة.',
+  bad_video:'رابط الفيديو يجب أن يبدأ بـ https://',network:'تعذّر الاتصال. حاول مرة أخرى.'};
+function api(p){p.idToken=token;return fetch(API_URL,{method:'POST',body:JSON.stringify(p)}).then(function(r){return r.json()}).catch(function(){return{ok:false,error:'network'}})}
+function showErr(e){$('err').textContent=ERR[e]||('حدث خطأ: '+e);if(e==='session_expired'||e==='bad_token'){signOut()}}
+
+/* surah select */
+(function(){
+  var h='<option value="">— بدون سورة —</option>';
+  for(var i=SURAHS.length;i>=1;i--) h+='<option value="'+i+'">'+i+'. '+SURAHS[i-1]+' ('+AYAHS[i-1]+')</option>';
+  $('surah').innerHTML=h;
+})();
+function syncAyahs(reset){
+  var s=+$('surah').value, max=s?AYAHS[s-1]:0;
+  $('from').disabled=$('to').disabled=!s; $('from').max=$('to').max=max||'';
+  if(!s){$('from').value='';$('to').value='';$('ayHint').textContent='';return}
+  if(reset||!$('from').value){$('from').value=1} if(reset||!$('to').value){$('to').value=max}
+  $('ayHint').textContent='سورة '+SURAHS[s-1]+': '+max+' آية';
+}
+$('surah').addEventListener('change',function(){syncAyahs(true)});
+
+function resetForm(){
+  $('f').reset(); $('id').value=''; $('date').value=today(); $('group').value='all'; syncAyahs(true);
+  $('formTitle').textContent='درس جديد'; $('cancelBtn').classList.add('hidden');
+  [].forEach.call(document.querySelectorAll('.lesson.editing'),function(x){x.classList.remove('editing')});
+}
+$('cancelBtn').addEventListener('click',function(){resetForm();$('formMsg').textContent=''});
+
+$('f').addEventListener('submit',function(ev){
+  ev.preventDefault();
+  var s=+$('surah').value, fr=+$('from').value, to=+$('to').value;
+  if(s){ var max=AYAHS[s-1]; if(!(fr>=1&&to>=fr&&to<=max)){ $('formMsg').className='msg err'; $('formMsg').textContent='نطاق الآيات غير صحيح (1 إلى '+max+').'; return; } }
+  if(!s&&!$('homework').value.trim()&&!$('topic').value.trim()){ $('formMsg').className='msg err'; $('formMsg').textContent='اكتب سورة أو واجباً أو موضوعاً على الأقل.'; return; }
+  var L={id:$('id').value,date:$('date').value,group:$('group').value,surah:s||'',from:s?fr:'',to:s?to:'',
+    homework:$('homework').value,topic:$('topic').value,text:$('text').value,video:$('video').value.trim()};
+  $('saveBtn').disabled=true; $('formMsg').className='msg'; $('formMsg').textContent='جارٍ الحفظ…';
+  api({action:'saveLesson',lesson:L}).then(function(d){
+    $('saveBtn').disabled=false;
+    if(!d.ok){ $('formMsg').className='msg err'; $('formMsg').textContent=ERR[d.error]||d.error; return; }
+    $('formMsg').className='msg ok'; $('formMsg').textContent='✓ تم الحفظ والنشر في البوابة.';
+    resetForm(); show(d);
+  });
+});
+
+function show(d){
+  lessons=d.lessons||[];
+  $('listCard').classList.remove('hidden');
+  if(!lessons.length){ $('list').innerHTML='<p class="muted">لا توجد دروس بعد. اكتب أول درس في الأعلى.</p>'; return; }
+  $('list').innerHTML=lessons.map(function(l,i){
+    var n=l.students.length, c=l.doneCount, pct=n?Math.round(c*100/n):0;
+    var sur=l.surah?('📖 سورة '+SURAHS[l.surah-1]+' '+(l.from||1)+'–'+(l.to||AYAHS[l.surah-1])):'';
+    var done=l.students.filter(function(s){return s.done}), not=l.students.filter(function(s){return !s.done});
+    return '<div class="lesson" id="les_'+esc(l.id)+'"><div class="lt"><div>'+
+      '<span class="tag">'+esc(fmt(l.date))+'</span><span class="tag">'+(l.group==='all'?'كل المجموعات':'المجموعة '+esc(l.group))+'</span>'+
+      (l.date>today()?'<span class="tag" style="background:#e8f0fb;color:#2b5aa0">لم يظهر بعد</span>':'')+
+      '<div style="margin-top:6px"><b>'+esc(sur)+'</b>'+(l.topic?(sur?' · ':'')+'🕌 '+esc(l.topic):'')+'</div>'+
+      (l.homework?'<div class="muted" style="white-space:pre-line">✏️ '+esc(l.homework)+'</div>':'')+'</div>'+
+      '<div style="display:flex;gap:6px"><button class="btn sec small" data-edit="'+i+'" type="button">تعديل</button>'+
+      '<button class="btn red small" data-del="'+i+'" type="button">حذف</button></div></div>'+
+      '<div class="muted" style="margin-top:8px">أنجز الواجب: <b>'+c+'</b> من <b>'+n+'</b></div><div class="bar2"><i style="width:'+pct+'%"></i></div>'+
+      '<details><summary>من أنجز ومن لم يُنجز</summary><div class="kids">'+
+      done.map(function(s){return '<span class="y">✓ '+esc(s.name)+'</span>'}).join('')+
+      not.map(function(s){return '<span class="n">○ '+esc(s.name)+'</span>'}).join('')+'</div></details></div>';
+  }).join('');
+}
+
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-edit],[data-del]'); if(!b) return;
+  var l=lessons[+(b.dataset.edit||b.dataset.del)]; if(!l) return;
+  if(b.dataset.del!=null){
+    if(!confirm('حذف درس '+fmt(l.date)+'؟ سيختفي من البوابة وتُحذف علامات الإنجاز الخاصة به.')) return;
+    b.disabled=true; api({action:'deleteLesson',id:l.id}).then(function(d){ if(d.ok){show(d)} else showErr(d.error) }); return;
+  }
+  $('id').value=l.id; $('date').value=l.date; $('group').value=l.group||'all'; $('surah').value=l.surah||'';
+  syncAyahs(false); $('from').value=l.from||''; $('to').value=l.to||''; if(l.surah) syncAyahs(false);
+  $('homework').value=l.homework||''; $('topic').value=l.topic||''; $('text').value=l.text||''; $('video').value=l.video||'';
+  $('formTitle').textContent='تعديل درس '+fmt(l.date); $('cancelBtn').classList.remove('hidden'); $('formMsg').textContent='';
+  [].forEach.call(document.querySelectorAll('.lesson.editing'),function(x){x.classList.remove('editing')});
+  $('les_'+l.id).classList.add('editing');
+  $('formCard').scrollIntoView({behavior:'smooth'});
+});
+
+function start(){
+  $('signin').classList.add('hidden'); $('err').textContent='';
+  api({action:'lessons'}).then(function(d){
+    if(!d.ok){ showErr(d.error); if(d.error==='not_teacher'){$('signin').classList.remove('hidden')} return; }
+    $('formCard').classList.remove('hidden'); resetForm(); show(d);
+  });
+}
+function signOut(){token=null;try{sessionStorage.removeItem('tok')}catch(e){}
+  $('formCard').classList.add('hidden');$('listCard').classList.add('hidden');$('signin').classList.remove('hidden')}
+function onCredential(r){token=r.credential;try{sessionStorage.setItem('tok',token)}catch(e){}start()}
+
+(function init(){
+  $('date').value=today(); syncAyahs(true);
+  try{token=sessionStorage.getItem('tok')}catch(e){}
+  if(token) start();
+  (function waitGsi(){
+    if(!(window.google&&google.accounts&&google.accounts.id)) return setTimeout(waitGsi,150);
+    google.accounts.id.initialize({client_id:CLIENT_ID,callback:onCredential});
+    google.accounts.id.renderButton($('gbtn'),{theme:'outline',size:'large',shape:'pill',text:'signin_with'});
+  })();
+})();
+</script>
+</body>
+</html>
