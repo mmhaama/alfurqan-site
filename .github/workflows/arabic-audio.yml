@@ -1,5 +1,6 @@
-# Makes sure every Arabic word/sentence in the language exercises has a recording.
-# Runs whenever the exercises change; generates only what is missing and commits it to audio/tts/.
+# Makes sure every Arabic word/sentence in the language exercises has a recording (Google Cloud TTS).
+# Runs whenever the exercises change; generates only what is missing and commits it to audio/g/.
+# Needs the repository secret GOOGLE_TTS_KEY.
 name: Arabic audio
 on:
   push:
@@ -14,28 +15,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       - name: Install tools
-        run: |
-          pip install piper-tts==1.8.0 numpy
-          npm install --no-save --no-package-lock jsdom@24
-          sudo apt-get install -y ffmpeg >/dev/null || true
-      - name: Download voice
-        run: curl -sL https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-ar_JO-kareem-medium.tar.bz2 | tar xj -C /tmp
+        run: npm install --no-save --no-package-lock jsdom@24
       - name: List every text the exercises can speak
         run: node tools/tts/collect.js /tmp/said.json
       - name: Generate missing recordings
-        run: python tools/tts/gen.py /tmp/said.json /tmp/vits-piper-ar_JO-kareem-medium/ar_JO-kareem-medium.onnx
+        env:
+          GOOGLE_TTS_KEY: ${{ secrets.GOOGLE_TTS_KEY }}
+        run: python3 tools/tts/gen.py /tmp/said.json
       - name: Check nothing is missing
-        run: python tools/tts/gen.py /tmp/said.json --check
+        env:
+          GOOGLE_TTS_KEY: ${{ secrets.GOOGLE_TTS_KEY }}
+        run: if [ -n "$GOOGLE_TTS_KEY" ]; then python3 tools/tts/gen.py /tmp/said.json --check; fi
       - name: Commit
         run: |
           git config user.name "alfurqan-audio-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add audio/tts
+          git rm -r -q --ignore-unmatch audio/tts tools/tts/arphon.py tools/tts/diag.py
+          git add audio/g
           git diff --cached --quiet || (git commit -m "audio: add missing Arabic recordings" && git push)
