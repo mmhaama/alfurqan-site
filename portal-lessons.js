@@ -25,6 +25,14 @@
   function w() { return W[lang] || W.ar; }
   function surahName(n) { return lang === 'nl' ? (SURAHS_NL[n - 1] || '') : (SURAHS[n - 1] || ''); }
   function first(name) { return String(name || '').split(/\s+/)[0]; }
+  function tr(l, f) { return lang === 'nl' && l[f + 'Nl'] ? l[f + 'Nl'] : (l[f] || ''); }
+  (function () {
+    var st = document.createElement('style');
+    st.textContent = '.quran.nlm{text-align:right}.ayrow{padding:6px 0;border-bottom:1px dashed #e7dfcc}.ayrow:last-child{border-bottom:0}' +
+      '.nltr{direction:ltr;text-align:left;font-family:Inter,system-ui,sans-serif;font-size:.95rem;line-height:1.6;color:#3d4b47;margin:2px 0 4px}' +
+      '.nltr b{color:#8a6510;margin-right:6px}.trsrc{font-size:.75rem;color:#8a9692;margin-top:6px;direction:ltr;text-align:left}';
+    document.head.appendChild(st);
+  })();
   function fmtDate(d) { var p = String(d).split('-'); return p.length === 3 ? p[2] + '/' + p[1] : d; }
 
   /* ---------- cartoon owl (original drawing) ---------- */
@@ -77,10 +85,10 @@
         '<div class="muted" style="font-size:.85rem;margin-top:4px">' + esc(L.tap) + '</div>' +
         '<div class="ctrl"><button class="sbtn alt" type="button" data-kids="' + l.surah + '">' + esc(L.kids) + '</button></div></div>';
     }
-    if (l.homework) h += '<div class="sec"><h4>✏️ ' + esc(L.hw) + '</h4><p>' + esc(l.homework) + '</p></div>';
+    if (l.homework) h += '<div class="sec"><h4>✏️ ' + esc(L.hw) + '</h4><p>' + esc(tr(l, 'homework')) + '</p></div>';
     if (l.topic || l.text || l.video) {
       var id = ytId(l.video);
-      h += '<div class="sec"><h4>🕌 ' + esc(L.topic) + (l.topic ? ': ' + esc(l.topic) : '') + '</h4>' + (l.text ? '<p>' + esc(l.text) + '</p>' : '') +
+      h += '<div class="sec"><h4>🕌 ' + esc(L.topic) + (l.topic ? ': ' + esc(tr(l, 'topic')) : '') + '</h4>' + (l.text ? '<p>' + esc(tr(l, 'text')) + '</p>' : '') +
         (id ? '<div class="ctrl"><button class="sbtn gold" type="button" data-yt="' + id + '">' + esc(L.video) + '</button></div><div id="yt_' + key + '"></div>'
             : (l.video ? '<div class="ctrl"><a class="sbtn gold" style="text-decoration:none" href="' + esc(l.video) + '" target="_blank" rel="noopener">' + esc(L.video) + '</a></div>' : '')) +
         '</div>';
@@ -92,8 +100,8 @@
     }
     if (ls.length > 1) {
       h += '<details class="prev"><summary>' + esc(L.prev) + '</summary>' + ls.slice(1).map(function (p) {
-        var what = [p.surah ? (lang === 'nl' ? 'Soera ' : 'سورة ') + surahName(p.surah) + ' ' + (p.from || 1) + '–' + (p.to || AYAHS[p.surah - 1]) : '', p.topic || ''].filter(Boolean).join(' · ');
-        return '<div class="prow"><span><bdi>' + esc(fmtDate(p.date)) + '</bdi> · ' + esc(what || p.homework || '') + '</span>' +
+        var what = [p.surah ? (lang === 'nl' ? 'Soera ' : 'سورة ') + surahName(p.surah) + ' ' + (p.from || 1) + '–' + (p.to || AYAHS[p.surah - 1]) : '', tr(p, 'topic')].filter(Boolean).join(' · ');
+        return '<div class="prow"><span><bdi>' + esc(fmtDate(p.date)) + '</bdi> · ' + esc(what || tr(p, 'homework')) + '</span>' +
           (p.done ? '<span style="color:var(--ok);white-space:nowrap">' + esc(L.doneShort) + '</span>'
                   : '<button class="sbtn alt" style="padding:4px 12px;font-size:.85rem" type="button" data-done="' + k.num + '|' + p.id + '" data-name="' + esc(first(k.name)) + '">✅</button>') + '</div>';
       }).join('') + '</details>';
@@ -105,9 +113,10 @@
   var qCache = {};
   function loadSurah(n) {
     if (qCache[n]) return qCache[n];
-    qCache[n] = fetch(QTEXT + n + '/quran-uthmani').then(function (r) { return r.json(); }).then(function (d) {
-      if (!d || d.code !== 200) throw new Error('q');
-      return d.data.ayahs.map(function (a) { return { n: a.numberInSurah, g: a.number, t: a.text }; });
+    qCache[n] = fetch(QTEXT + n + '/editions/quran-uthmani,nl.siregar').then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || d.code !== 200 || !d.data || !d.data[0]) throw new Error('q');
+      var nl = (d.data[1] && d.data[1].ayahs) || [];
+      return d.data[0].ayahs.map(function (a, i) { return { n: a.numberInSurah, g: a.number, t: a.text, nl: nl[i] ? nl[i].text : '' }; });
     });
     qCache[n].catch(function () { delete qCache[n]; });
     return qCache[n];
@@ -118,11 +127,15 @@
     loadSurah(s).then(function (ayahs) {
       var h = '';
       if (f === 1 && s !== 1 && s !== 9) h += '<div class="bsm">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>';
+      var nlm = lang === 'nl';
       ayahs.forEach(function (a) {
         if (a.n < f || a.n > to) return;
         var txt = (a.n === 1 && s !== 1 && s !== 9) ? a.t.replace(BSM, '') : a.t;
-        h += '<span class="ay" data-g="' + a.g + '" data-n="' + a.n + '">' + esc(txt) + '</span><span class="an">' + a.n + '</span> ';
+        var ar = '<span class="ay" data-g="' + a.g + '" data-n="' + a.n + '">' + esc(txt) + '</span><span class="an">' + a.n + '</span> ';
+        h += nlm ? '<div class="ayrow">' + ar + (a.nl ? '<div class="nltr"><b>' + a.n + '.</b>' + esc(a.nl) + '</div>' : '') + '</div>' : ar;
       });
+      if (nlm) h += '<div class="trsrc">Vertaling: Sofian S. Siregar</div>';
+      el.classList.toggle('nlm', nlm);
       el.innerHTML = h;
     }).catch(function () { el.innerHTML = '<span class="muted" style="font-size:.9rem">' + esc(w().qErr) + '</span>'; });
   }
