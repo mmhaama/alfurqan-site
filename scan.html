@@ -127,14 +127,16 @@ function updateCount(){
 
 /* ---------- API ---------- */
 function api(payload){
-  payload.idToken = token;
+  var ss=null; try{ ss=localStorage.getItem('sess'); }catch(e){}
+  if (ss) payload.session = ss; else payload.idToken = token;
   return fetch(API_URL,{method:'POST',body:JSON.stringify(payload)})
     .then(function(r){ return r.json(); })
+    .then(function(d){ if (d && d.session){ try{ localStorage.setItem('sess', d.session); }catch(e){} } return d; })
     .catch(function(){ return {ok:false,error:'network'}; });
 }
 function handleAuthError(d){
   if (d.error==='session_expired' || d.error==='bad_token' || d.error==='not_signed_in'){
-    token = null; try{ sessionStorage.removeItem('tTok'); }catch(e){}
+    token = null; try{ sessionStorage.removeItem('tTok'); localStorage.removeItem('sess'); }catch(e){}
     if (window.google && google.accounts) google.accounts.id.prompt();   // silent re-login when possible
     return true;
   }
@@ -277,7 +279,7 @@ function onCredential(resp){
 (function init(){
   $('today').textContent = new Date().toLocaleDateString('ar-EG-u-nu-latn',{weekday:'long',day:'numeric',month:'long'});
   useCachedRoster(); updateCount();
-  try{ token = sessionStorage.getItem('tTok'); }catch(e){}
+  try{ token = sessionStorage.getItem('tTok') || (localStorage.getItem('sess') ? 'session' : null); }catch(e){}
   if (token){ $('login').classList.add('hidden'); loadRoster().then(flush); }
   startCamera();
   (function waitGsi(){
