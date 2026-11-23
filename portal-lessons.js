@@ -14,13 +14,17 @@
       tap: 'اضغط على أي آية لسماعها.', hw: 'الواجب', topic: 'موضوع الأسبوع', video: '▶ شاهد الفيديو', done: '✅ أنجزتُ الواجب',
       doneOk: '✓ تم إنجاز الواجب — أحسنت!', undo: 'تراجع', prev: 'الدروس السابقة', noLesson: 'لا يوجد درس مسجّل بعد. سيظهر هنا درس الأسبوع وواجبه.',
       bravo: 'أحسنت يا ', partyText: 'بارك الله فيك! استمر هكذا 🌟', loading: 'جارٍ التحميل…', qErr: 'تعذّر تحميل الآيات. حاول مرة أخرى.',
-      doneShort: '✓ أُنجز', notDone: 'لم يُنجز', allGroups: 'كل المجموعات', grp: 'المجموعة ' },
+      doneShort: '✓ أُنجز', notDone: 'لم يُنجز', allGroups: 'كل المجموعات', grp: 'المجموعة ',
+      pr: 'تدريب هذا الأسبوع', min: ' دقيقة', of: ' من ', days: 'أيام التدريب: ', last: 'آخر تدريب: ', never: 'لم يبدأ التدريب بعد', today: 'اليوم', yest: 'أمس',
+      goalHit: 'حققتَ هدف الأسبوع! 🎯', goalText: 'استمعتَ للتلاوة وتدربتَ كل هذا الوقت. ما شاء الله!', listenHint: 'استمع للتلاوة وكرّر الآيات لتملأ الدائرة 🎧' },
     nl: { week: 'Les van deze week', hi: 'Hallo ', surah: 'Soera om te leren', ayat: 'Verzen ', to: ' t/m ', listen: '▶ Luister',
       stop: '■ Stop', repeat: 'Herhalen', times: 'x', once: '1x', reciter: 'Recitator', kids: '🎧 Hele soera met kinderen',
       tap: 'Tik op een vers om het te horen.', hw: 'Huiswerk', topic: 'Onderwerp van de week', video: '▶ Bekijk de video', done: '✅ Huiswerk af!',
       doneOk: '✓ Huiswerk gedaan — goed zo!', undo: 'ongedaan maken', prev: 'Vorige lessen', noLesson: 'Nog geen les ingevoerd. Hier verschijnt de les en het huiswerk van de week.',
       bravo: 'Goed gedaan, ', partyText: 'Ga zo door! 🌟', loading: 'Laden…', qErr: 'Verzen konden niet worden geladen. Probeer opnieuw.',
-      doneShort: '✓ gedaan', notDone: 'niet gedaan', allGroups: 'alle groepen', grp: 'Groep ' }
+      doneShort: '✓ gedaan', notDone: 'niet gedaan', allGroups: 'alle groepen', grp: 'Groep ',
+      pr: 'Oefenen deze week', min: ' min', of: ' van ', days: 'Oefendagen: ', last: 'Laatst geoefend: ', never: 'Nog niet geoefend', today: 'vandaag', yest: 'gisteren',
+      goalHit: 'Weekdoel gehaald! 🎯', goalText: 'Je hebt deze week flink geluisterd en geoefend. Knap gedaan!', listenHint: 'Luister naar de recitatie en herhaal de verzen om de cirkel te vullen 🎧' }
   };
   function w() { return W[lang] || W.ar; }
   function surahName(n) { return lang === 'nl' ? (SURAHS_NL[n - 1] || '') : (SURAHS[n - 1] || ''); }
@@ -30,7 +34,9 @@
     var st = document.createElement('style');
     st.textContent = '.quran.nlm{text-align:right}.ayrow{padding:6px 0;border-bottom:1px dashed #e7dfcc}.ayrow:last-child{border-bottom:0}' +
       '.nltr{direction:ltr;text-align:left;font-family:Inter,system-ui,sans-serif;font-size:.95rem;line-height:1.6;color:#3d4b47;margin:2px 0 4px}' +
-      '.nltr b{color:#8a6510;margin-right:6px}.trsrc{font-size:.75rem;color:#8a9692;margin-top:6px;direction:ltr;text-align:left}';
+      '.nltr b{color:#8a6510;margin-right:6px}.trsrc{font-size:.75rem;color:#8a9692;margin-top:6px;direction:ltr;text-align:left}' +
+      '.prac{display:flex;align-items:center;gap:14px;margin-top:12px;background:#fff;border:1px solid #e7dfcc;border-radius:14px;padding:10px 14px}' +
+      '.prac svg{width:64px;height:64px;flex:0 0 64px}.prac .rv{transition:stroke-dashoffset .6s ease}.prac b{color:#0f4d3c}.prac .muted{font-size:.85rem}';
     document.head.appendChild(st);
   })();
   function fmtDate(d) { var p = String(d).split('-'); return p.length === 3 ? p[2] + '/' + p[1] : d; }
@@ -57,6 +63,76 @@
       '</svg>';
   };
 
+  /* ---------- weekly practice ring ---------- */
+  var liveSecs = {};
+  function todayStr() { var d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); }
+  function weekStr() { var d = new Date(); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); }
+  function lastTxt(d) {
+    var L = w(); if (!d) return L.never;
+    var t = todayStr(), y = new Date(Date.now() - 864e5); y.setMinutes(y.getMinutes() - y.getTimezoneOffset());
+    return L.last + (d === t ? L.today : d === y.toISOString().slice(0, 10) ? L.yest : fmtDate(d));
+  }
+  function pracHtml(k) {
+    var p = k.practice || { weekSecs: 0, goalSecs: 1200, weekDays: 0, last: '' }, L = w();
+    return '<div class="prac" id="pr_' + k.num + '" data-base="' + (p.weekSecs || 0) + '" data-goal="' + (p.goalSecs || 1200) + '" data-name="' + esc(first(k.name)) + '">' +
+      '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#eee6d2" stroke-width="7"/>' +
+      '<circle class="rv" cx="32" cy="32" r="26" fill="none" stroke="#2bb673" stroke-width="7" stroke-linecap="round" transform="rotate(-90 32 32)" stroke-dasharray="163.4" stroke-dashoffset="163.4"/>' +
+      '<text x="32" y="37" text-anchor="middle" font-size="15" font-weight="700" fill="#0f4d3c" font-family="Inter,sans-serif">0%</text></svg>' +
+      '<div><b>🎧 ' + esc(L.pr) + '</b><div class="pv"></div><div class="muted">' + esc(L.days) + '<bdi>' + (p.weekDays || 0) + '</bdi> · ' + esc(lastTxt(p.last)) + '</div></div></div>';
+  }
+  function updateRing(num) {
+    var el = document.getElementById('pr_' + num); if (!el) return;
+    var L = w(), goal = +el.dataset.goal, secs = +el.dataset.base + (liveSecs[num] || 0);
+    var pct = Math.min(1, secs / goal), mins = Math.floor(secs / 60);
+    el.querySelector('.rv').setAttribute('stroke-dashoffset', (163.4 * (1 - pct)).toFixed(1));
+    el.querySelector('text').textContent = Math.round(pct * 100) + '%';
+    el.querySelector('.pv').innerHTML = '<bdi>' + mins + '</bdi>' + esc(L.of) + '<bdi>' + Math.round(goal / 60) + '</bdi>' + esc(L.min) +
+      (secs < 60 ? ' · <span class="muted">' + esc(L.listenHint) + '</span>' : '');
+    var key = 'goal_' + num + '_' + weekStr();
+    if (secs >= goal && +el.dataset.base < goal) {
+      var seen = null; try { seen = localStorage.getItem(key); } catch (e) {}
+      if (!seen) { try { localStorage.setItem(key, '1'); } catch (e) {} party(el.dataset.name, L.goalHit, L.goalText); }
+    }
+  }
+
+  /* ---------- activity reporting (opened lesson, listening seconds, ayah repeats) ---------- */
+  var pend = {};
+  function addAct(key, secs, reps) {
+    if (!key) return;
+    var o = pend[key] = pend[key] || { secs: 0, reps: 0 };
+    o.secs += secs || 0; o.reps += reps || 0;
+    var num = key.split('_')[0];
+    if (secs) { liveSecs[num] = (liveSecs[num] || 0) + secs; updateRing(num); }
+  }
+  function post(body) {
+    if (!token) return;
+    body.idToken = token;
+    try { fetch(API_URL, { method: 'POST', body: JSON.stringify(body), keepalive: true }).catch(function () {}); } catch (e) {}
+  }
+  function flush() {
+    Object.keys(pend).forEach(function (key) {
+      var o = pend[key], secs = Math.floor(o.secs);
+      if (secs < 1 && !o.reps) return;
+      var p = key.split('_');
+      post({ action: 'activity', num: p[0], lesson: p[1], secs: secs, reps: o.reps });
+      o.secs -= secs; o.reps = 0;
+    });
+  }
+  setInterval(flush, 30000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') flush(); });
+  window.addEventListener('pagehide', flush);
+  function markOpened(kids) {
+    var d = todayStr();
+    (kids || []).forEach(function (k) {
+      var l = (k.lessons || [])[0]; if (!l) return;
+      var key = 'op_' + k.num + '_' + l.id + '_' + d, seen = null;
+      try { seen = localStorage.getItem(key); } catch (e) {}
+      if (seen) return;
+      try { localStorage.setItem(key, '1'); } catch (e) {}
+      post({ action: 'activity', num: k.num, lesson: l.id, open: true });
+    });
+  }
+
   function ytId(u) {
     var m = String(u || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{11})/);
     return m ? m[1] : '';
@@ -67,11 +143,11 @@
     var L = w(), ls = k.lessons || [];
     if (!ls.length) {
       return '<div class="lesson"><div class="lhead">' + owlSvg() + '<div><h3>' + esc(L.week) + '</h3>' +
-        '<div class="muted">' + esc(L.noLesson) + '</div></div></div></div>';
+        '<div class="muted">' + esc(L.noLesson) + '</div></div></div>' + pracHtml(k) + '</div>';
     }
     var l = ls[0], key = k.num + '_' + l.id, h = '';
     h += '<div class="lesson"><div class="lhead">' + owlSvg() + '<div><h3>' + esc(L.week) + '</h3><div class="muted">' +
-      esc(L.hi + first(k.name)) + ' 👋 · <bdi>' + esc(fmtDate(l.date)) + '</bdi></div></div></div>';
+      esc(L.hi + first(k.name)) + ' 👋 · <bdi>' + esc(fmtDate(l.date)) + '</bdi></div></div></div>' + pracHtml(k);
     if (l.surah) {
       var from = l.from || 1, to = l.to || AYAHS[l.surah - 1];
       h += '<div class="sec"><h4>📖 ' + esc(L.surah) + ': ' + esc((lang === 'nl' ? 'Soera ' : 'سورة ') + surahName(l.surah)) + '</h4>' +
@@ -83,7 +159,7 @@
         RECITERS.map(function (r) { return '<option value="' + r.id + '">' + esc(r[lang] || r.ar) + '</option>'; }).join('') + '</select></label></div>' +
         '<div class="quran" id="q_' + key + '" data-s="' + l.surah + '" data-f="' + from + '" data-t="' + to + '"><span class="muted" style="font-family:inherit;font-size:.9rem">' + esc(L.loading) + '</span></div>' +
         '<div class="muted" style="font-size:.85rem;margin-top:4px">' + esc(L.tap) + '</div>' +
-        '<div class="ctrl"><button class="sbtn alt" type="button" data-kids="' + l.surah + '">' + esc(L.kids) + '</button></div></div>';
+        '<div class="ctrl"><button class="sbtn alt" type="button" data-kids="' + l.surah + '" data-key="' + key + '">' + esc(L.kids) + '</button></div></div>';
     }
     if (l.homework) h += '<div class="sec"><h4>✏️ ' + esc(L.hw) + '</h4><p>' + esc(tr(l, 'homework')) + '</p></div>';
     if (l.topic || l.text || l.video) {
@@ -141,8 +217,13 @@
   }
 
   /* ---------- audio player ---------- */
-  var audio = new Audio(), queue = [], qi = 0, curBtn = null, curBox = null;
+  var audio = new Audio(), queue = [], qi = 0, curBtn = null, curBox = null, curKey = null, lastT = 0;
   audio.preload = 'auto';
+  audio.addEventListener('play', function () { lastT = audio.currentTime; });
+  audio.addEventListener('timeupdate', function () {
+    var dt = audio.currentTime - lastT; lastT = audio.currentTime;
+    if (!audio.paused && curKey && dt > 0 && dt < 2) addAct(curKey, dt, 0);
+  });
   function stopAll() {
     audio.pause(); queue = []; qi = 0;
     if (curBtn) curBtn.textContent = w().listen;
@@ -157,14 +238,14 @@
     audio.src = it.url;
     audio.play().catch(function () { stopAll(); });
   }
-  audio.addEventListener('ended', function () { setTimeout(playNext, 350); });
+  audio.addEventListener('ended', function () { if (curKey && queue.length) addAct(curKey, 0, 1); setTimeout(playNext, 350); });
   audio.addEventListener('error', function () { if (queue.length) setTimeout(playNext, 200); });
   function startQueue(key, els, btn) {
     stopAll();
     var box = document.getElementById('q_' + key);
     var rep = +(document.querySelector('[data-rep="' + key + '"]') || {}).value || 1;
     var rec = (document.querySelector('[data-rec="' + key + '"]') || {}).value || 'ar.husary';
-    curBox = box; curBtn = btn || null;
+    curBox = box; curBtn = btn || null; curKey = key;
     els.forEach(function (el) {
       for (var i = 0; i < rep; i++) queue.push({ el: el, url: 'https://cdn.islamic.network/quran/audio/128/' + rec + '/' + el.dataset.g + '.mp3' });
     });
@@ -207,11 +288,11 @@
       if (t < 200) raf = requestAnimationFrame(frame); else ctx.clearRect(0, 0, W2, H);
     })();
   }
-  function party(name) {
+  function party(name, title, text) {
     var L = w();
     document.getElementById('partyOwl').innerHTML = owlSvg();
-    document.getElementById('partyTitle').textContent = L.bravo + name + '!';
-    document.getElementById('partyText').textContent = L.partyText;
+    document.getElementById('partyTitle').textContent = title ? title : L.bravo + name + '!';
+    document.getElementById('partyText').textContent = text || L.partyText;
     document.getElementById('party').classList.add('show');
     confetti(); chime();
     if (navigator.vibrate) try { navigator.vibrate([60, 40, 60]); } catch (e) {}
@@ -236,7 +317,7 @@
     if (b.dataset.kids) {
       stopAll();
       if (b.dataset.on) { delete b.dataset.on; b.textContent = w().kids; return; }
-      b.dataset.on = '1'; b.textContent = w().stop;
+      b.dataset.on = '1'; b.textContent = w().stop; curKey = b.dataset.key;
       audio.src = KIDS_SURAH + b.dataset.kids + '.mp3'; audio.play().catch(function () {});
       audio.onended = function () { delete b.dataset.on; b.textContent = w().kids; audio.onended = null; };
       return;
@@ -257,9 +338,11 @@
     }
   });
 
-  window.afterRender = function () {
-    stopAll();
+  window.afterRender = function (kids) {
+    stopAll(); flush(); liveSecs = {};
     [].forEach.call(document.querySelectorAll('.quran[data-s]'), fillQuran);
+    (kids || []).forEach(function (k) { updateRing(k.num); });
+    markOpened(kids);
   };
   if (window.lastData) render(lastData);
 })();
