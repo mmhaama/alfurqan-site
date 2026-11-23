@@ -21,6 +21,7 @@
       bravo: 'أحسنت يا ', partyText: 'بارك الله فيك! استمر هكذا 🌟', loading: 'جارٍ التحميل…', qErr: 'تعذّر تحميل الآيات. حاول مرة أخرى.',
       doneShort: '✓ أُنجز', notDone: 'لم يُنجز', allGroups: 'كل المجموعات', grp: 'المجموعة ',
       pr: 'تدريب هذا الأسبوع', min: ' دقيقة', of: ' من ', days: 'أيام التدريب: ', last: 'آخر تدريب: ', never: 'لم يبدأ التدريب بعد', today: 'اليوم', yest: 'أمس',
+      games: 'ألعاب المراجعة', gMem: 'لعبة الذاكرة', gSp: 'تحدي ٦٠ ثانية',
       arabic: 'اللغة العربية', book: 'الكتاب ص ', langGo: '▶ ابدأ تمارين اللغة', langAgain: '🔁 أعد التمارين', langDone: 'أنهيتَ التمارين', print: 'ورقة للطباعة',
       libLessons: 'الدروس السابقة', libSurahs: 'السور المحفوظة', libHint: 'اضغط على السورة لتسمعها وتراجعها. وقت المراجعة يُحسب في تدريب الأسبوع 🎧', noOld: 'لا توجد دروس سابقة بعد.', ayatN: ' آيات', fullSurah: 'السورة كاملة',
       goalHit: 'حققتَ هدف الأسبوع! 🎯', goalText: 'استمعتَ للتلاوة وتدربتَ كل هذا الوقت. ما شاء الله!', listenHint: 'استمع للتلاوة وكرّر الآيات لتملأ الدائرة 🎧' },
@@ -31,6 +32,7 @@
       bravo: 'Goed gedaan, ', partyText: 'Ga zo door! 🌟', loading: 'Laden…', qErr: 'Verzen konden niet worden geladen. Probeer opnieuw.',
       doneShort: '✓ gedaan', notDone: 'niet gedaan', allGroups: 'alle groepen', grp: 'Groep ',
       pr: 'Oefenen deze week', min: ' min', of: ' van ', days: 'Oefendagen: ', last: 'Laatst geoefend: ', never: 'Nog niet geoefend', today: 'vandaag', yest: 'gisteren',
+      games: 'Oefenspelletjes', gMem: 'Geheugenspel', gSp: '60 seconden',
       arabic: 'Arabisch', book: 'boek p. ', langGo: '▶ Start de oefeningen', langAgain: '🔁 Opnieuw oefenen', langDone: 'Oefeningen af', print: 'Werkblad printen',
       libLessons: 'Vorige lessen', libSurahs: 'Geleerde soera\'s', libHint: 'Tik op een soera om te luisteren en te herhalen. Herhalen telt mee voor het weekdoel 🎧', noOld: 'Nog geen vorige lessen.', ayatN: ' verzen', fullSurah: 'Hele soera',
       goalHit: 'Weekdoel gehaald! 🎯', goalText: 'Je hebt deze week flink geluisterd en geoefend. Knap gedaan!', listenHint: 'Luister naar de recitatie en herhaal de verzen om de cirkel te vullen 🎧' }
@@ -178,6 +180,12 @@
       '<a class="sbtn alt" style="text-decoration:none" href="/lang.html?u=' + encodeURIComponent(l.lang) + '&print=1" target="_blank" rel="noopener">🖨️ ' + esc(L.print) + '</a></div></div>';
   }
   document.addEventListener('click', function (e) {
+    var gm = e.target.closest('[data-game]');
+    if (gm && window.LangRun) {
+      stopAll(); var gn = gm.dataset.num;
+      LangRun.game(gm.dataset.game, gm.dataset.units.split(','), { onTime: function (s) { addAct(gn + '_GAME', s, 0); } });
+      return;
+    }
     var b = e.target.closest('[data-langgo]'); if (!b || !window.LangRun) return;
     stopAll();
     var num = b.dataset.num, key = b.dataset.key, unit = b.dataset.langgo;
@@ -230,6 +238,12 @@
   }
   window.libraryHtml = function (k) {
     var L = w(), ls = (k.lessons || []).slice(1), sur = learnedSurahs(k), h = '<div class="panel">';
+    var units = []; (k.lessons || []).forEach(function (l) { if (l.lang && window.LangRun && LangRun.units[l.lang] && units.indexOf(l.lang) < 0) units.push(l.lang); });
+    if (units.length && LangRun.pool(units).length >= 4) {
+      h += '<h3 class="libh">🎮 ' + esc(L.games) + '</h3><div class="ctrl" style="margin-top:0">' +
+        '<button class="sbtn gold" type="button" data-game="mem" data-units="' + esc(units.join(',')) + '" data-num="' + k.num + '">🧠 ' + esc(L.gMem) + '</button>' +
+        '<button class="sbtn gold" type="button" data-game="sp" data-units="' + esc(units.join(',')) + '" data-num="' + k.num + '">⏱️ ' + esc(L.gSp) + '</button></div>';
+    }
     h += '<h3 class="libh">🗂️ ' + esc(L.libLessons) + ' <span class="cnt">' + ls.length + '</span></h3>';
     if (!ls.length) h += '<p class="muted" style="margin:4px 0 0">' + esc(L.noOld) + '</p>';
     ls.forEach(function (l) {
