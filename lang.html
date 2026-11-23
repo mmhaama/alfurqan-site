@@ -55,9 +55,7 @@ else{
     g+='<div class="u"><b>'+l[1]+'</b><button class="go" data-game="mem" data-units="'+u+'">🧠 الذاكرة</button><button class="go" data-game="sp" data-units="'+u+'">⏱️ ٦٠ ثانية</button></div>';
   });
   document.getElementById('games').innerHTML=g;
-  var LIC=window.LANG_AUDIO_LIC||{};
-  document.getElementById('cred').innerHTML='بعض الكلمات بأصوات متحدثين حقيقيين من مشروع <a href="https://lingualibre.org" target="_blank" rel="noopener">Lingua Libre</a> على <a href="https://commons.wikimedia.org/wiki/Category:Lingua_Libre_pronunciation-ara" target="_blank" rel="noopener">Wikimedia Commons</a>. المتحدثون والتراخيص: '+
-    Object.keys(LIC).map(function(s){return s+' ('+LIC[s]+')'}).join('، ')+'. باقي الكلمات بصوت الجهاز.';
+  document.getElementById('cred').textContent='نطق الكلمات بصوت Google العربي (Cloud Text-to-Speech).';
   document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b&&b.dataset.go)LangRun.open(b.dataset.go);var gm=e.target.closest('[data-game]');if(gm)LangRun.game(gm.dataset.game,gm.dataset.units.split(','));});
   if(id&&U[id]) LangRun.open(id);
 }
