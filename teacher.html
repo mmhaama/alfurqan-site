@@ -47,6 +47,11 @@
   details summary{cursor:pointer;color:var(--green-2);font-weight:600;margin-top:8px}
   .kids{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px 12px;margin-top:8px;font-size:.92rem}
   .kids .y{color:var(--ok)}.kids .n{color:#9b9b9b}
+  table.st{width:100%;border-collapse:collapse;margin-top:8px;font-size:.9rem}
+  table.st th,table.st td{padding:6px 6px;border-top:1px solid var(--line);text-align:start}
+  table.st th{color:var(--muted);font-weight:600;font-size:.8rem}
+  table.st td:not(:first-child),table.st th:not(:first-child){text-align:center}
+  table.st tr.y td:first-child{color:var(--ok);font-weight:700}table.st tr.n td{color:#9b9b9b}
   .hint{font-size:.82rem;color:var(--muted);margin-top:2px}
   #gbtn{min-height:44px;margin-top:8px}
   footer{padding:24px 0 40px;text-align:center;color:var(--muted);font-size:.9rem}
@@ -186,10 +191,10 @@ function show(d){
       (l.homework?'<div class="muted" style="white-space:pre-line">✏️ '+esc(l.homework)+'</div>':'')+'</div>'+
       '<div style="display:flex;gap:6px"><button class="btn sec small" data-edit="'+i+'" type="button">تعديل</button>'+
       '<button class="btn red small" data-del="'+i+'" type="button">حذف</button></div></div>'+
-      '<div class="muted" style="margin-top:8px">أنجز الواجب: <b>'+c+'</b> من <b>'+n+'</b></div><div class="bar2"><i style="width:'+pct+'%"></i></div>'+
-      '<details><summary>من أنجز ومن لم يُنجز</summary><div class="kids">'+
-      done.map(function(s){return '<span class="y">✓ '+esc(s.name)+'</span>'}).join('')+
-      not.map(function(s){return '<span class="n">○ '+esc(s.name)+'</span>'}).join('')+'</div></details></div>';
+      '<div class="muted" style="margin-top:8px">👁 فتح الدرس: <b>'+(l.openedCount||0)+'</b> من <b>'+n+'</b> · ✅ أنجز الواجب: <b>'+c+'</b> من <b>'+n+'</b></div><div class="bar2"><i style="width:'+pct+'%"></i></div>'+
+      '<details><summary>تفاصيل كل طالب</summary><table class="st"><thead><tr><th>الطالب</th><th>فتح الدرس</th><th>🎧 دقائق</th><th>تكرار</th><th>الواجب</th></tr></thead><tbody>'+
+      done.concat(not).map(function(s){return '<tr class="'+(s.done?'y':(s.opened?'':'n'))+'"><td>'+esc(s.name)+'</td><td>'+(s.opened?'👁':'—')+'</td><td>'+(s.mins||0)+'</td><td>'+(s.reps||0)+'</td><td>'+(s.done?'✓':'○')+'</td></tr>'}).join('')+
+      '</tbody></table></details></div>';
   }).join('');
 }
 
