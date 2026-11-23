@@ -90,6 +90,13 @@
     <div id="gbtn"></div>
   </section>
 
+  <!-- teachers only -->
+  <a class="card hidden" id="teacher" href="/scan.html" style="display:flex;align-items:center;justify-content:space-between;gap:12px;text-decoration:none;color:inherit;border-color:var(--gold);background:var(--gold-soft)">
+    <span><b><span data-l="ar">تسجيل الحضور</span><span data-l="nl">Aanwezigheid registreren</span></b><br>
+      <span class="muted"><span data-l="ar">للمعلمين: فتح ماسح رموز الطلاب</span><span data-l="nl">Voor docenten: QR-scanner openen</span></span></span>
+    <span style="font-size:1.6rem">📷</span>
+  </a>
+
   <!-- 2. children -->
   <section id="kids" class="hidden"></section>
 
@@ -180,6 +187,7 @@ function showError(code){
 
 function render(data){
   lastData=data;
+  $('teacher').classList.toggle('hidden', !data.isTeacher);
   var kids=data.children||[], box=$('kids'), L=t(), html='';
   $('who').innerHTML=esc(L.signedIn)+'<span class="num" dir="ltr">'+esc(data.email||'')+'</span>';
   if(!kids.length){ html='<div class="card"><p class="muted" style="margin:0">'+esc(L.none)+'</p></div>'; }
@@ -220,7 +228,7 @@ function signOut(){
   token=null; lastData=null;
   try{sessionStorage.removeItem('tok')}catch(e){}
   if(window.google&&google.accounts) google.accounts.id.disableAutoSelect();
-  $('kids').classList.add('hidden'); $('link').classList.add('hidden');
+  $('kids').classList.add('hidden'); $('link').classList.add('hidden'); $('teacher').classList.add('hidden');
   $('signin').classList.remove('hidden'); $('outBtn').classList.add('hidden');
 }
 
