@@ -53,6 +53,16 @@
   table.st td:not(:first-child),table.st th:not(:first-child){text-align:center}
   table.st tr.y td:first-child{color:var(--ok);font-weight:700}table.st tr.n td{color:#9b9b9b}
   .hint{font-size:.82rem;color:var(--muted);margin-top:2px}
+  .sh{margin:26px 0 4px;font-size:1.2rem;display:flex;align-items:center;gap:8px}.sh .cnt{font:700 .8rem Inter,sans-serif;background:#efe8d6;border-radius:999px;padding:1px 9px;color:var(--muted)}
+  .tools2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .tools2 select,.tools2 input{width:auto;flex:0 0 auto;padding:7px 10px;font-size:.92rem}.tools2 input{flex:1 1 180px}
+  .chipb{border:1.5px solid var(--green);background:#fff;color:var(--green);border-radius:999px;padding:6px 12px;font:700 .85rem inherit;font-family:inherit;cursor:pointer}
+  .chipb.on{background:var(--green);color:#fff}
+  .vlink{display:inline-flex;align-items:center;gap:6px;margin-top:6px;color:#b4441b;font-weight:700;text-decoration:none;font-size:.92rem}
+  .lesson.cur{border-color:#9fd3b6;background:#f6fbf8}
+  .sg{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:10px 0}
+  .sg .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.sg .chips span{background:#e3f3ea;color:var(--ok);border-radius:999px;padding:2px 10px;font-size:.85rem}
+  .sg .chips span.now{background:var(--gold-soft);color:#7a5a10;font-weight:700}
   #gbtn{min-height:44px;margin-top:8px}
   footer{padding:24px 0 40px;text-align:center;color:var(--muted);font-size:.9rem}
   footer a{color:var(--green-2)}
@@ -114,8 +124,19 @@
   </section>
 
   <section id="listCard" class="hidden">
-    <h2 style="margin:26px 0 0;font-size:1.2rem">الدروس المنشورة</h2>
+    <h2 class="sh">📌 الدرس الحالي لكل مجموعة</h2>
+    <div id="curList"></div>
+    <h2 class="sh">📚 مكتبة الدروس <span class="cnt" id="libCnt">0</span></h2>
+    <p class="hint">كل الدروس السابقة. اضغط «تعديل» لتصحيح أي درس — يظهر التصحيح فوراً عند أولياء الأمور.</p>
+    <div class="tools2">
+      <select id="fGroup"><option value="">كل المجموعات</option></select>
+      <button class="chipb" id="fVideo" type="button">▶ فيها فيديو فقط</button>
+      <input id="fText" type="search" placeholder="🔍 بحث: سورة، موضوع، واجب…">
+    </div>
     <div id="list"></div>
+    <h2 class="sh">📖 السور المحفوظة لكل مجموعة</h2>
+    <p class="hint">تُبنى تلقائياً من سور الدروس (من السورة الحالية حتى الناس)، وهي نفسها التي يراها الطلاب في «مكتبتي». لتصحيحها عدّل سورة الدرس.</p>
+    <div id="surList"></div>
   </section>
 </main>
 
@@ -177,27 +198,66 @@ $('f').addEventListener('submit',function(ev){
   });
 });
 
+var groups=[], fVid=false;
+function ytOk(u){return /youtu\.?be/.test(String(u||''))}
+function lessonCard(l,i,cur){
+  var n=l.students.length, c=l.doneCount, pct=n?Math.round(c*100/n):0;
+  var sur=l.surah?('📖 سورة '+SURAHS[l.surah-1]+' '+(l.from||1)+'–'+(l.to||AYAHS[l.surah-1])):'';
+  var done=l.students.filter(function(s){return s.done}), not=l.students.filter(function(s){return !s.done});
+  return '<div class="lesson'+(cur?' cur':'')+'" id="les_'+esc(l.id)+'"><div class="lt"><div>'+
+    '<span class="tag">'+esc(fmt(l.date))+'</span><span class="tag">'+(l.group==='all'?'كل المجموعات':'المجموعة '+esc(l.group))+'</span>'+
+    (l.date>today()?'<span class="tag" style="background:#e8f0fb;color:#2b5aa0">مجدول — لم يظهر بعد</span>':'')+
+    '<div style="margin-top:6px"><b>'+esc(sur)+'</b>'+(l.topic?(sur?' · ':'')+'🕌 '+esc(l.topic):'')+'</div>'+
+    (l.homework?'<div class="muted" style="white-space:pre-line">✏️ '+esc(l.homework)+'</div>':'')+
+    (l.video?'<a class="vlink" href="'+esc(l.video)+'" target="_blank" rel="noopener">▶ فتح الفيديو</a>':'')+'</div>'+
+    '<div style="display:flex;gap:6px"><button class="btn sec small" data-edit="'+i+'" type="button">تعديل</button>'+
+    '<button class="btn red small" data-del="'+i+'" type="button">حذف</button></div></div>'+
+    '<div class="muted" style="margin-top:8px">👁 فتح الدرس: <b>'+(l.openedCount||0)+'</b> من <b>'+n+'</b> · ✅ أنجز الواجب: <b>'+c+'</b> من <b>'+n+'</b></div><div class="bar2"><i style="width:'+pct+'%"></i></div>'+
+    '<details><summary>تفاصيل كل طالب</summary><table class="st"><thead><tr><th>الطالب</th><th>فتح الدرس</th><th>🎧 دقائق</th><th>تكرار</th><th>الواجب</th></tr></thead><tbody>'+
+    done.concat(not).map(function(s){return '<tr class="'+(s.done?'y':(s.opened?'':'n'))+'"><td>'+esc(s.name)+'</td><td>'+(s.opened?'👁':'—')+'</td><td>'+(s.mins||0)+'</td><td>'+(s.reps||0)+'</td><td>'+(s.done?'✓':'○')+'</td></tr>'}).join('')+
+    '</tbody></table></details></div>';
+}
+function forGroup(l,g){return !g||l.group==='all'||String(l.group)===String(g)}
+function currentFor(g){ var t=today(); for(var i=0;i<lessons.length;i++){ if(lessons[i].date<=t&&forGroup(lessons[i],g)) return i; } return -1; }
 function show(d){
-  lessons=d.lessons||[];
+  lessons=d.lessons||[]; groups=(d.groups||[]).filter(Boolean);
   $('listCard').classList.remove('hidden');
-  if(!lessons.length){ $('list').innerHTML='<p class="muted">لا توجد دروس بعد. اكتب أول درس في الأعلى.</p>'; return; }
-  $('list').innerHTML=lessons.map(function(l,i){
-    var n=l.students.length, c=l.doneCount, pct=n?Math.round(c*100/n):0;
-    var sur=l.surah?('📖 سورة '+SURAHS[l.surah-1]+' '+(l.from||1)+'–'+(l.to||AYAHS[l.surah-1])):'';
-    var done=l.students.filter(function(s){return s.done}), not=l.students.filter(function(s){return !s.done});
-    return '<div class="lesson" id="les_'+esc(l.id)+'"><div class="lt"><div>'+
-      '<span class="tag">'+esc(fmt(l.date))+'</span><span class="tag">'+(l.group==='all'?'كل المجموعات':'المجموعة '+esc(l.group))+'</span>'+
-      (l.date>today()?'<span class="tag" style="background:#e8f0fb;color:#2b5aa0">لم يظهر بعد</span>':'')+
-      '<div style="margin-top:6px"><b>'+esc(sur)+'</b>'+(l.topic?(sur?' · ':'')+'🕌 '+esc(l.topic):'')+'</div>'+
-      (l.homework?'<div class="muted" style="white-space:pre-line">✏️ '+esc(l.homework)+'</div>':'')+'</div>'+
-      '<div style="display:flex;gap:6px"><button class="btn sec small" data-edit="'+i+'" type="button">تعديل</button>'+
-      '<button class="btn red small" data-del="'+i+'" type="button">حذف</button></div></div>'+
-      '<div class="muted" style="margin-top:8px">👁 فتح الدرس: <b>'+(l.openedCount||0)+'</b> من <b>'+n+'</b> · ✅ أنجز الواجب: <b>'+c+'</b> من <b>'+n+'</b></div><div class="bar2"><i style="width:'+pct+'%"></i></div>'+
-      '<details><summary>تفاصيل كل طالب</summary><table class="st"><thead><tr><th>الطالب</th><th>فتح الدرس</th><th>🎧 دقائق</th><th>تكرار</th><th>الواجب</th></tr></thead><tbody>'+
-      done.concat(not).map(function(s){return '<tr class="'+(s.done?'y':(s.opened?'':'n'))+'"><td>'+esc(s.name)+'</td><td>'+(s.opened?'👁':'—')+'</td><td>'+(s.mins||0)+'</td><td>'+(s.reps||0)+'</td><td>'+(s.done?'✓':'○')+'</td></tr>'}).join('')+
-      '</tbody></table></details></div>';
+  var fg=$('fGroup').value;
+  $('fGroup').innerHTML='<option value="">كل المجموعات</option>'+groups.map(function(g){return '<option value="'+esc(g)+'">المجموعة '+esc(g)+'</option>'}).join('');
+  $('fGroup').value=fg;
+  renderLists();
+}
+function renderLists(){
+  if(!lessons.length){ $('curList').innerHTML='<p class="muted">لا توجد دروس بعد. اكتب أول درس في الأعلى.</p>'; $('list').innerHTML=''; $('surList').innerHTML=''; $('libCnt').textContent=0; return; }
+  var t=today(), curIdx={}, h='';
+  /* scheduled (future) lessons first, then the live lesson of every group */
+  lessons.forEach(function(l,i){ if(l.date>t){ curIdx[i]=1; h+=lessonCard(l,i,true); } });
+  groups.forEach(function(g){ var i=currentFor(g); if(i>=0&&!curIdx[i]){ curIdx[i]=1; h+=lessonCard(lessons[i],i,true); } });
+  $('curList').innerHTML=h||'<p class="muted">لا يوجد درس حالي.</p>';
+  /* library */
+  var g=$('fGroup').value, q=$('fText').value.trim().toLowerCase(), lib=[];
+  lessons.forEach(function(l,i){
+    if(curIdx[i]||!forGroup(l,g)) return;
+    if(fVid&&!l.video) return;
+    if(q){ var hay=[l.surah?SURAHS[l.surah-1]:'',l.topic,l.text,l.homework,l.date,fmt(l.date)].join(' ').toLowerCase(); if(hay.indexOf(q)<0) return; }
+    lib.push(lessonCard(l,i,false));
+  });
+  $('libCnt').textContent=lessons.length-Object.keys(curIdx).length;
+  $('list').innerHTML=lib.join('')||'<p class="muted" style="margin-top:12px">لا توجد دروس مطابقة.</p>';
+  /* learned surahs per group (same rule as the parent portal) */
+  $('surList').innerHTML=groups.map(function(g){
+    var mine=lessons.filter(function(l){return l.date<=t&&forGroup(l,g)}), cur=mine[0]&&mine[0].surah, set={};
+    if(cur) for(var n=cur+1;n<=114;n++) set[n]=1;
+    mine.slice(1).forEach(function(l){ if(l.surah&&l.surah!==cur) set[l.surah]=1; });
+    var list=Object.keys(set).map(Number).sort(function(a,b){return a-b});
+    return '<div class="sg"><b>المجموعة '+esc(g)+'</b> <span class="muted">— '+list.length+' سورة محفوظة</span><div class="chips">'+
+      (cur?'<span class="now">الحالية: '+esc(SURAHS[cur-1])+'</span>':'')+
+      list.map(function(n){return '<span>'+n+'. '+esc(SURAHS[n-1])+'</span>'}).join('')+'</div></div>';
   }).join('');
 }
+$('fGroup').addEventListener('change',renderLists);
+$('fText').addEventListener('input',renderLists);
+$('fVideo').addEventListener('click',function(){fVid=!fVid;this.classList.toggle('on',fVid);renderLists()});
 
 document.addEventListener('click',function(e){
   var b=e.target.closest('[data-edit],[data-del]'); if(!b) return;
