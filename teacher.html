@@ -94,6 +94,12 @@
       <textarea id="text" placeholder="فقرة قصيرة يقرؤها ولي الأمر مع طفله."></textarea>
       <label for="video">رابط فيديو (اختياري — YouTube)</label>
       <input id="video" dir="ltr" placeholder="https://www.youtube.com/watch?v=…">
+      <details id="nlBox" style="margin-top:14px"><summary>🇳🇱 الترجمة الهولندية (تلقائية — يمكنك تعديلها)</summary>
+        <p class="hint">اتركها فارغة وستُترجم تلقائياً عند الحفظ. بعد الحفظ اضغط «تعديل» لترى الترجمة وتصحّحها إن أردت.</p>
+        <label for="homeworkNl">Huiswerk</label><textarea id="homeworkNl" dir="ltr"></textarea>
+        <label for="topicNl">Onderwerp</label><input id="topicNl" dir="ltr">
+        <label for="textNl">Uitleg</label><textarea id="textNl" dir="ltr"></textarea>
+      </details>
       <div class="actions">
         <button class="btn" id="saveBtn" type="submit">💾 حفظ ونشر</button>
         <button class="btn sec hidden" id="cancelBtn" type="button">إلغاء التعديل</button>
@@ -138,6 +144,8 @@ function syncAyahs(reset){
   $('ayHint').textContent='سورة '+SURAHS[s-1]+': '+max+' آية';
 }
 $('surah').addEventListener('change',function(){syncAyahs(true)});
+/* Arabic text changed → old Dutch translation is out of date: clear it so it is translated again on save */
+['homework','topic','text'].forEach(function(f){$(f).addEventListener('input',function(){$(f+'Nl').value=''})});
 
 function resetForm(){
   $('f').reset(); $('id').value=''; $('date').value=today(); $('group').value='all'; syncAyahs(true);
@@ -152,7 +160,8 @@ $('f').addEventListener('submit',function(ev){
   if(s){ var max=AYAHS[s-1]; if(!(fr>=1&&to>=fr&&to<=max)){ $('formMsg').className='msg err'; $('formMsg').textContent='نطاق الآيات غير صحيح (1 إلى '+max+').'; return; } }
   if(!s&&!$('homework').value.trim()&&!$('topic').value.trim()){ $('formMsg').className='msg err'; $('formMsg').textContent='اكتب سورة أو واجباً أو موضوعاً على الأقل.'; return; }
   var L={id:$('id').value,date:$('date').value,group:$('group').value,surah:s||'',from:s?fr:'',to:s?to:'',
-    homework:$('homework').value,topic:$('topic').value,text:$('text').value,video:$('video').value.trim()};
+    homework:$('homework').value,topic:$('topic').value,text:$('text').value,video:$('video').value.trim(),
+    homeworkNl:$('homeworkNl').value,topicNl:$('topicNl').value,textNl:$('textNl').value};
   $('saveBtn').disabled=true; $('formMsg').className='msg'; $('formMsg').textContent='جارٍ الحفظ…';
   api({action:'saveLesson',lesson:L}).then(function(d){
     $('saveBtn').disabled=false;
@@ -194,6 +203,7 @@ document.addEventListener('click',function(e){
   $('id').value=l.id; $('date').value=l.date; $('group').value=l.group||'all'; $('surah').value=l.surah||'';
   syncAyahs(false); $('from').value=l.from||''; $('to').value=l.to||''; if(l.surah) syncAyahs(false);
   $('homework').value=l.homework||''; $('topic').value=l.topic||''; $('text').value=l.text||''; $('video').value=l.video||'';
+  $('homeworkNl').value=l.homeworkNl||''; $('topicNl').value=l.topicNl||''; $('textNl').value=l.textNl||'';
   $('formTitle').textContent='تعديل درس '+fmt(l.date); $('cancelBtn').classList.remove('hidden'); $('formMsg').textContent='';
   [].forEach.call(document.querySelectorAll('.lesson.editing'),function(x){x.classList.remove('editing')});
   $('les_'+l.id).classList.add('editing');
