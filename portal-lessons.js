@@ -105,8 +105,7 @@
     if (secs) { liveSecs[num] = (liveSecs[num] || 0) + secs; updateRing(num); }
   }
   function post(body) {
-    if (!token) return;
-    body.idToken = token;
+    if (!window.authBody || !authBody(body)) return;
     try { fetch(API_URL, { method: 'POST', body: JSON.stringify(body), keepalive: true }).catch(function () {}); } catch (e) {}
   }
   function flush() {
