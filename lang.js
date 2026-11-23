@@ -18,7 +18,7 @@
     voice = v.find(function (x) { return /google/i.test(x.name); }) || v[0] || null;
   }
   if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-  /* 1) native recording (Lingua Libre)  2) our generated recording /audio/tts/<key>.mp3  3) device voice */
+  /* 1) native recording (Lingua Libre)  2) our generated recording /audio/g/<key>.mp3 (Google WaveNet)  3) device voice */
   var LA = window.LANG_AUDIO || {}, rec = new Audio(), sayN = 0;
   function llKey(t) { return bare(t).replace(/[.،؟!]/g, '').trim(); }
   function llUrl(a) { return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(('LL-Q13955 (ara)-' + a[0] + '-' + a[1] + '.wav').replace(/ /g, '_')); }
@@ -27,7 +27,7 @@
     for (var i = 0; i < b.length; i++) { h ^= b[i]; h = Math.imul(h, 0x01000193) >>> 0; }
     return ('0000000' + h.toString(16)).slice(-8);
   }
-  function ttsUrl(t) { return '/audio/tts/' + ttsKey(t) + '.mp3'; }
+  function ttsUrl(t) { return '/audio/g/' + ttsKey(t) + '.mp3'; }
   function say(t) {
     if (!t) return;
     var n = ++sayN, a = LA[llKey(t)], urls = [];
