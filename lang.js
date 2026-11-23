@@ -18,7 +18,7 @@
     voice = v.find(function (x) { return /google/i.test(x.name); }) || v[0] || null;
   }
   if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-  /* 1) native recording (Lingua Libre)  2) our generated recording /audio/g/<key>.mp3 (Google WaveNet)  3) device voice */
+  /* 1) our generated recording /audio/g/<key>.mp3 (Google WaveNet)  2) device voice */
   var LA = window.LANG_AUDIO || {}, rec = new Audio(), sayN = 0;
   function llKey(t) { return bare(t).replace(/[.،؟!]/g, '').trim(); }
   function llUrl(a) { return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(('LL-Q13955 (ara)-' + a[0] + '-' + a[1] + '.wav').replace(/ /g, '_')); }
@@ -31,7 +31,7 @@
   function say(t) {
     if (!t) return;
     var n = ++sayN, a = LA[llKey(t)], urls = [];
-    if (a) urls.push(llUrl(a));
+    /* Lingua Libre recordings are no longer used: several were cut off at the source */
     urls.push(ttsUrl(t));
     try { rec.pause(); } catch (e) {}
     try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
@@ -157,7 +157,7 @@
     return s;
   }
 
-  function credit() { return '<p class="muted" style="font-size:.72rem;margin:4px 0">🎙️ ' + (nl() ? 'Een deel van de woorden met echte stemmen van ' : 'بَعْضُ الكَلِمَاتِ بِأَصْوَاتٍ حَقِيقِيَّةٍ مِنْ ') + '<a href="/lang.html#credits" target="_blank" rel="noopener">Lingua Libre</a></p>'; }
+  function credit() { return ''; }
 
   /* ---------- review games (memory + 60-second challenge) ---------- */
   function pool(ids) {
