@@ -31,6 +31,10 @@
   <h1>🔤 تمارين اللغة العربية</h1>
   <p class="muted">تمارين تفاعلية تتبع ترتيب الكتاب المدرسي. محتوى التمارين والأمثلة من إعداد الأكاديمية.</p>
   <div id="list"></div>
+  <h2>🎮 أَلْعَابُ المُرَاجَعَةِ</h2>
+  <div id="games"></div>
+  <h2 id="credits">🎙️ مصادر الأصوات</h2>
+  <p class="muted" id="cred"></p>
 </main>
 <script src="/lang-data.js"></script>
 <script src="/lang.js"></script>
@@ -45,7 +49,16 @@ else{
     }).join('');
   });
   document.getElementById('list').innerHTML=h;
-  document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)LangRun.open(b.dataset.go);});
+  var g='';
+  [[1,'المستوى الأول'],[2,'المستوى الثاني']].forEach(function(l){
+    var u=ids.filter(function(i){return U[i].level===l[0]}).join(',');
+    g+='<div class="u"><b>'+l[1]+'</b><button class="go" data-game="mem" data-units="'+u+'">🧠 الذاكرة</button><button class="go" data-game="sp" data-units="'+u+'">⏱️ ٦٠ ثانية</button></div>';
+  });
+  document.getElementById('games').innerHTML=g;
+  var LIC=window.LANG_AUDIO_LIC||{};
+  document.getElementById('cred').innerHTML='بعض الكلمات بأصوات متحدثين حقيقيين من مشروع <a href="https://lingualibre.org" target="_blank" rel="noopener">Lingua Libre</a> على <a href="https://commons.wikimedia.org/wiki/Category:Lingua_Libre_pronunciation-ara" target="_blank" rel="noopener">Wikimedia Commons</a>. المتحدثون والتراخيص: '+
+    Object.keys(LIC).map(function(s){return s+' ('+LIC[s]+')'}).join('، ')+'. باقي الكلمات بصوت الجهاز.';
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b&&b.dataset.go)LangRun.open(b.dataset.go);var gm=e.target.closest('[data-game]');if(gm)LangRun.game(gm.dataset.game,gm.dataset.units.split(','));});
   if(id&&U[id]) LangRun.open(id);
 }
 </script>
