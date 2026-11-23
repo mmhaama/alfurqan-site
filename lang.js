@@ -18,7 +18,24 @@
     voice = v.find(function (x) { return /google/i.test(x.name); }) || v[0] || null;
   }
   if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  /* native recordings (Lingua Libre) first, device voice as fallback */
+  var LA = window.LANG_AUDIO || {}, rec = new Audio();
+  function llKey(t) { return bare(t).replace(/[.،؟!]/g, '').trim(); }
+  function llUrl(a) { return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(('LL-Q13955 (ara)-' + a[0] + '-' + a[1] + '.wav').replace(/ /g, '_')); }
   function say(t) {
+    if (!t) return;
+    var a = LA[llKey(t)];
+    try { rec.pause(); } catch (e) {}
+    if (a) {
+      try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
+      rec.src = llUrl(a);
+      rec.onerror = function () { tts(t); };
+      rec.play().catch(function () { tts(t); });
+      return;
+    }
+    tts(t);
+  }
+  function tts(t) {
     if (!window.speechSynthesis || !t) return;
     try {
       speechSynthesis.cancel();
@@ -71,6 +88,8 @@
       '.lx-fb{text-align:center;font-weight:700;margin-top:10px;min-height:1.6em}.lx-fb.ok{color:#1f7a4d}.lx-fb.no{color:#b23b2e}' +
       '.lx-end{text-align:center;padding-top:20px}.lx-end .st{font-size:3rem;letter-spacing:6px}.lx-end h3{color:#0f4d3c;font-size:1.5rem;margin:8px 0}' +
       '.lx-num{display:inline-flex;align-items:center;justify-content:center;min-width:1.3em;height:1.3em;padding:0 .1em;border-radius:.2em;background:#0f4d3c;color:#fff;font-family:"Amiri",serif;font-weight:700;line-height:1}' +
+      '.lx-mem{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:460px;margin:0 auto}.lx-mc{aspect-ratio:1;border:0;border-radius:14px;background:linear-gradient(135deg,#14654f,#2bb673);cursor:pointer;font-family:"Amiri",serif;font-size:1.5rem;color:#1d2a26;box-shadow:0 3px 0 #0f4d3c}' +
+      '.lx-mc span{visibility:hidden;font-size:inherit}.lx-mc .lx-num,.lx-mc span{line-height:1.2}.lx-mc.up{background:#fff;border:2px solid #e7dfcc;box-shadow:none}.lx-mc.up span{visibility:visible}.lx-mc.up span{font-size:2.2rem}.lx-mc.ok{background:#e3f3ea;border:2px solid #2bb673}' +
       '.lx-chant{text-align:center;font-family:"Amiri",serif;font-size:1.4rem;color:#0f4d3c;background:#e9f4ee;border-radius:12px;padding:8px}';
     document.head.appendChild(st);
   })();
@@ -130,6 +149,82 @@
     return s;
   }
 
+  function credit() { return '<p class="muted" style="font-size:.72rem;margin:4px 0">🎙️ ' + (nl() ? 'Een deel van de woorden met echte stemmen van ' : 'بَعْضُ الكَلِمَاتِ بِأَصْوَاتٍ حَقِيقِيَّةٍ مِنْ ') + '<a href="/lang.html#credits" target="_blank" rel="noopener">Lingua Libre</a></p>'; }
+
+  /* ---------- review games (memory + 60-second challenge) ---------- */
+  function pool(ids) {
+    var out = [], seen = {};
+    function add(w, e) { var k = llKey(w); if (!w || !e || seen[k] || /[ _]/.test(w.trim())) return; seen[k] = 1; out.push({ w: w.replace(/[\u064C\u064D]$/, ''), e: e }); }
+    (ids || []).forEach(function (id) {
+      var u = U[id]; if (!u) return;
+      if (u.level === 1) { GROUPS.forEach(function (g) { u.words[g].forEach(function (w) { add(w[0], w[1]); }); }); (u.extra || []).forEach(function (w) { add(w[0], w[1]); }); }
+      else { u.examples.forEach(function (e) { add(e[0].replace(/^هَذَا |^هَذِهِ |\.$/g, ''), e[1]); }); u.ex.forEach(function (x) { if (x.t === 'choose' || x.t === 'sort') x.items.forEach(function (it) { add(it[3] || it[0], it[1]); }); }); }
+    });
+    return out;
+  }
+  var game = null;
+  function openGame(kind, ids, opts) {
+    var P = pool(ids); if (P.length < 4) return false;
+    ensure(); cur = null;
+    game = { kind: kind, P: P, opts: opts || {}, tick: Date.now(), key: 'lxbest_' + kind + '_' + (ids || []).join(',') };
+    document.getElementById('lxT').textContent = kind === 'mem' ? '🧠 ' + (nl() ? 'Geheugenspel' : 'لُعْبَةُ الذَّاكِرَةِ') : '⏱️ ' + (nl() ? '60 seconden' : 'تَحَدِّي ٦٠ ثَانِيَة');
+    document.getElementById('lxN').textContent = ''; document.getElementById('lxBar').style.width = '0';
+    ov.classList.add('show'); document.body.style.overflow = 'hidden';
+    if (kind === 'mem') memStart(); else spStart();
+    return true;
+  }
+  function gReport() { if (!game || !game.opts.onTime) return; var s = Math.round((Date.now() - game.tick) / 1000); game.tick = Date.now(); if (s > 0) game.opts.onTime(Math.min(s, 900)); }
+  function memStart() {
+    var pick = shuffle(game.P).slice(0, 6), cards = [];
+    pick.forEach(function (x, i) { cards.push({ p: i, t: 'e', v: x.e, w: x.w }); cards.push({ p: i, t: 'w', v: x.w, w: x.w }); });
+    game.cards = shuffle(cards); game.open = []; game.moves = 0; game.left = 6;
+    var h = '<div class="lx-q">' + (nl() ? 'Zoek het plaatje bij het woord.' : 'اقْلِبِ البِطَاقَاتِ وَطَابِقِ الصُّورَةَ مَعَ كَلِمَتِهَا:') + '</div><div class="lx-mem">' +
+      game.cards.map(function (c, i) { return '<button type="button" class="lx-mc" data-mc="' + i + '"><span>' + (c.t === 'e' ? pic(c.v) : esc(c.v)) + '</span></button>'; }).join('') + '</div><div class="lx-fb" id="lxFb"></div>';
+    document.getElementById('lxB').innerHTML = h;
+  }
+  function memClick(i) {
+    var c = game.cards[i], el = document.querySelector('[data-mc="' + i + '"]');
+    if (!c || c.done || game.open.indexOf(i) >= 0 || game.open.length === 2) return;
+    el.classList.add('up'); game.open.push(i); if (c.t === 'w') say(c.w);
+    if (game.open.length < 2) return;
+    game.moves++;
+    var a = game.cards[game.open[0]], b = game.cards[game.open[1]], ea = document.querySelector('[data-mc="' + game.open[0] + '"]');
+    if (a.p === b.p) {
+      a.done = b.done = true; ea.classList.add('ok'); el.classList.add('ok'); game.open = []; game.left--; chime(true); say(a.w);
+      document.getElementById('lxBar').style.width = Math.round((6 - game.left) * 100 / 6) + '%';
+      if (!game.left) gameEnd(game.moves <= 9 ? 3 : game.moves <= 13 ? 2 : 1, (nl() ? 'Beurten: ' : 'عَدَدُ المُحَاوَلَاتِ: ') + ar(game.moves));
+    } else setTimeout(function () { ea.classList.remove('up'); el.classList.remove('up'); game.open = []; }, 900);
+  }
+  function spStart() {
+    game.score = 0; game.end = Date.now() + 60000;
+    document.getElementById('lxB').innerHTML = '<div class="lx-q" style="display:flex;justify-content:space-between"><span>' + (nl() ? 'Kies snel het goede woord!' : 'اخْتَرِ الكَلِمَةَ الصَّحِيحَةَ بِسُرْعَةٍ!') + '</span><b id="lxClock">٦٠</b></div>' +
+      '<div class="lx-q">⭐ <span id="lxScore">٠</span></div><div class="lx-pic" id="lxSpP"></div><div class="lx-opts" id="lxSpO"></div>';
+    spNext();
+    game.timer = setInterval(function () {
+      var left = Math.max(0, Math.ceil((game.end - Date.now()) / 1000)), c = document.getElementById('lxClock');
+      if (c) c.textContent = ar(left);
+      document.getElementById('lxBar').style.width = Math.round((60 - left) * 100 / 60) + '%';
+      if (!left) { clearInterval(game.timer); var best = 0; try { best = +localStorage.getItem(game.key) || 0; if (game.score > best) localStorage.setItem(game.key, game.score); } catch (e) {}
+        gameEnd(game.score >= 15 ? 3 : game.score >= 8 ? 2 : 1, (nl() ? 'Score: ' : 'نَتِيجَتُكَ: ') + ar(game.score) + (best ? ' · ' + (nl() ? 'record: ' : 'أَفْضَلُ نَتِيجَةٍ: ') + ar(Math.max(best, game.score)) : '')); }
+    }, 250);
+  }
+  function spNext() {
+    var x = shuffle(game.P)[0], others = shuffle(game.P.filter(function (y) { return y !== x; })).slice(0, 2), opts = shuffle([x].concat(others));
+    game.ans = x;
+    document.getElementById('lxSpP').innerHTML = pic(x.e);
+    document.getElementById('lxSpO').innerHTML = opts.map(function (o) { return '<button class="lx-opt" type="button" data-sp="' + esc(o.w) + '">' + esc(o.w) + '</button>'; }).join('');
+  }
+  function gameEnd(stars, line) {
+    gReport();
+    var h = '<div class="lx-end"><div class="st">' + '⭐'.repeat(stars) + '<span style="opacity:.25">' + '⭐'.repeat(3 - stars) + '</span></div><h3>' +
+      (stars === 3 ? 'مُمْتَاز! 🎉' : stars === 2 ? 'جَيِّدٌ جِدًّا! 👏' : 'أَحْسَنْتَ 💪') + '</h3><p>' + esc(line) + '</p>' +
+      '<button class="lx-next" type="button" data-lx="gagain" style="background:#fff;color:#0f4d3c;border:2px solid #0f4d3c;box-shadow:none">' + (nl() ? 'Nog een keer 🔁' : 'العَبْ مَرَّةً أُخْرَى 🔁') + '</button>' +
+      '<button class="lx-next" type="button" data-lx="close">' + (nl() ? 'Klaar ✓' : 'إِنْهَاء ✓') + '</button></div>';
+    document.getElementById('lxB').innerHTML = h;
+    if (game.opts.onDone) game.opts.onDone(stars);
+    if (stars === 3 && window.confettiBurst) window.confettiBurst();
+  }
+
   /* ---------- runner ---------- */
   var ov, cur = null;
   function ensure() {
@@ -150,17 +245,19 @@
     show();
   }
   function close() {
-    if (!cur) return;
-    report(); ov.classList.remove('show'); document.body.style.overflow = '';
-    try { speechSynthesis.cancel(); } catch (e) {}
-    cur = null;
+    if (!cur && !game) return;
+    if (cur) report();
+    if (game) { gReport(); clearInterval(game.timer); }
+    ov.classList.remove('show'); document.body.style.overflow = '';
+    try { speechSynthesis.cancel(); rec.pause(); } catch (e) {}
+    cur = null; game = null;
   }
   function report() {   // practice seconds since the last report
     if (!cur || !cur.opts.onTime) return;
     var secs = Math.round((Date.now() - cur.tick) / 1000); cur.tick = Date.now();
     if (secs > 0) cur.opts.onTime(Math.min(secs, 900));
   }
-  setInterval(function () { if (cur && document.visibilityState === 'visible') report(); }, 20000);
+  setInterval(function () { if (document.visibilityState !== 'visible') return; if (cur) report(); if (game) gReport(); }, 20000);
 
   function show() {
     var x = cur.s[cur.i], u = cur.u, h = '';
@@ -175,13 +272,13 @@
           u.words[g].map(function (w) { return '<button class="lx-card" type="button" data-say="' + esc(w[0]) + '"><span class="e">' + pic(w[1]) + '</span><span class="w">' + esc(w[0]) + '</span><span class="n">' + esc(w[2]) + '</span></button>'; }).join('') + '</div></div>';
       });
       if (u.chant) h += '<div class="lx-chant">🎵 ' + esc(u.chant) + ' ' + spk(u.chant.replace(/\.\.\./g, '،')) + '</div>';
-      h += '<p class="muted" style="font-size:.85rem">' + (nl() ? 'Tik op een woord om het te horen.' : 'اضْغَطْ عَلَى أَيِّ كَلِمَةٍ لِتَسْمَعَهَا.') + '</p>';
+      h += '<p class="muted" style="font-size:.85rem">' + (nl() ? 'Tik op een woord om het te horen.' : 'اضْغَطْ عَلَى أَيِّ كَلِمَةٍ لِتَسْمَعَهَا.') + '</p>' + credit();
       h += '<button class="lx-next" type="button" data-lx="next">' + (nl() ? 'Start de oefeningen ▶' : 'ابْدَأِ التَّمَارِينَ ▶') + '</button>';
     } else if (x.t === 'introG') {
       h += '<div class="lx-q">' + esc(u.title) + ' <span class="muted" style="font-weight:400">· 📕 ص ' + ar(esc(u.pages)) + '</span></div>';
       u.rule.forEach(function (r) { h += '<div class="lx-rule"><b>' + esc(r[0]) + '</b>' + esc(r[1]) + (r[2] ? '<div class="nl">' + esc(r[2]) + '</div>' : '') + '</div>'; });
       if (u.tip) h += '<div class="lx-tip">💡 ' + esc(u.tip) + '</div>';
-      h += '<div class="lx-cards">' + u.examples.map(function (e) { return '<button class="lx-card" type="button" data-say="' + esc(e[0]) + '"><span class="e">' + pic(e[1]) + '</span><span class="w">' + esc(e[0]) + '</span></button>'; }).join('') + '</div>';
+      h += credit() + '<div class="lx-cards">' + u.examples.map(function (e) { return '<button class="lx-card" type="button" data-say="' + esc(e[0]) + '"><span class="e">' + pic(e[1]) + '</span><span class="w">' + esc(e[0]) + '</span></button>'; }).join('') + '</div>';
       h += '<button class="lx-next" type="button" data-lx="next">' + (nl() ? 'Start de oefeningen ▶' : 'ابْدَأِ التَّمَارِينَ ▶') + '</button>';
     } else if (x.t === 'mcq') {
       h += '<div class="lx-q">' + esc(x.q) + '</div><div class="lx-pic">' + pic(x.e) + '</div>';
@@ -230,7 +327,21 @@
   }
   function fb(ok, txt) { var f = document.getElementById('lxFb'); f.className = 'lx-fb ' + (ok ? 'ok' : 'no'); f.textContent = txt; }
   function onClick(e) {
-    var b = e.target.closest('[data-lx],[data-opt],[data-tok],[data-bub],[data-say]'); if (!b || !cur) return;
+    var b = e.target.closest('[data-lx],[data-opt],[data-tok],[data-bub],[data-say],[data-mc],[data-sp]'); if (!b) return;
+    if (b.dataset.lx === 'close') { close(); return; }
+    if (game) {
+      if (b.dataset.lx === 'gagain') { var k = game.kind, ids0 = game.ids, o0 = game.opts; game.kind === 'mem' ? memStart() : spStart(); return; }
+      if (b.dataset.mc != null) { memClick(+b.dataset.mc); return; }
+      if (b.dataset.sp != null) {
+        if (Date.now() > game.end) return;
+        if (b.dataset.sp === game.ans.w) { game.score++; document.getElementById('lxScore').textContent = ar(game.score); chime(true); spNext(); }
+        else { b.classList.add('no'); chime(false); }
+        return;
+      }
+      if (b.dataset.say != null) say(b.dataset.say);
+      return;
+    }
+    if (!cur) return;
     if (b.dataset.say != null && !b.dataset.opt) { say(b.dataset.say); return; }
     var x = cur.s[cur.i];
     if (b.dataset.lx === 'close') { close(); return; }
@@ -294,6 +405,6 @@
     return h + '<p class="foot">alfurqanacademie.nl</p></body></html>';
   }
 
-  window.LangRun = { open: open, close: close, units: U, printSheet: printSheet, say: say,
+  window.LangRun = { open: open, close: close, units: U, printSheet: printSheet, say: say, game: openGame, pool: pool,
     screens: function (id) { var u = U[id]; return u ? (u.level === 1 ? letterScreens(u) : grammarScreens(u)) : []; } };
 })();
