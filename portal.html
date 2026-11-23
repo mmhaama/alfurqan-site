@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root{--green:#0f4d3c;--green-2:#14654f;--gold:#c9a24a;--gold-soft:#f3e7c6;--ink:#1d2a26;--muted:#5b6b66;
@@ -58,6 +58,58 @@
   .day.a{background:#f6e3e1;color:#a3261b}
   .hidden{display:none!important}
   #gbtn{margin-top:10px;min-height:44px}
+  /* ---- lesson of the week ---- */
+  .kidtop{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 12px;font:700 .9rem "Inter",sans-serif;background:#fff6dc;color:#8a6510;border:1px solid #f0dc9e}
+  .chip.fire{background:#ffe9e0;color:#b4441b;border-color:#f7c7b4}
+  .lesson{margin-top:16px;border-radius:16px;background:linear-gradient(160deg,#f2fbf6,#fffaf0);border:1px solid #d9ecdf;padding:16px 16px 18px;position:relative;overflow:hidden}
+  .lesson .lhead{display:flex;align-items:center;gap:12px}
+  .lesson .lhead h3{margin:0;font-size:1.15rem;color:var(--green)}
+  .lesson .lhead .muted{font-size:.85rem}
+  .owl{width:64px;height:64px;flex:0 0 64px;animation:bob 2.6s ease-in-out infinite}
+  .owl .lid{transform-origin:center;transform-box:fill-box;animation:blink 4.5s infinite}
+  .owl .wing{transform-box:fill-box}
+  .owl .wing.l{transform-origin:right top}.owl .wing.r{transform-origin:left top}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes blink{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}
+  @keyframes flapL{0%,100%{transform:rotate(0)}50%{transform:rotate(28deg)}}
+  @keyframes flapR{0%,100%{transform:rotate(0)}50%{transform:rotate(-28deg)}}
+  .sec{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .sec h4{margin:0 0 6px;font-size:1rem;display:flex;align-items:center;gap:8px}
+  .sec p{margin:0;white-space:pre-line}
+  .quran{font-family:"Amiri Quran","Amiri",serif;font-size:1.55rem;line-height:2.5;direction:rtl;text-align:justify;margin-top:8px}
+  .bsm{text-align:center;font-family:"Amiri Quran","Amiri",serif;font-size:1.3rem;color:var(--green);margin:4px 0}
+  .ay{cursor:pointer;border-radius:8px;padding:0 3px;transition:background .2s}
+  .ay:hover{background:#eef7f1}
+  .ay.on{background:#ffe9a8}
+  .an{display:inline-flex;align-items:center;justify-content:center;min-width:1.7em;height:1.7em;margin:0 4px;border-radius:50%;border:1.5px solid var(--gold);font:700 .8rem "Inter",sans-serif;color:#8a6510;vertical-align:middle}
+  .ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+  .ctrl select{font:inherit;font-size:.9rem;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .sbtn{border:0;border-radius:999px;padding:8px 16px;font-weight:700;font-size:.95rem;font-family:inherit;cursor:pointer;background:var(--green);color:#fff}
+  .sbtn.alt{background:#fff;color:var(--green);border:1.5px solid var(--green)}
+  .sbtn.gold{background:var(--gold);color:#1d1a10}
+  .done-btn{display:block;width:100%;margin-top:14px;border:0;border-radius:16px;padding:14px;font-weight:700;font-size:1.15rem;font-family:inherit;cursor:pointer;
+    background:linear-gradient(135deg,#2bb673,#1f8f5a);color:#fff;box-shadow:0 6px 0 #17714a;transition:transform .1s}
+  .done-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #17714a}
+  .done-btn:disabled{opacity:.7}
+  .done-ok{margin-top:14px;text-align:center;font-weight:700;color:var(--ok);background:var(--ok-bg);border-radius:14px;padding:10px}
+  .done-ok a{font-weight:400;font-size:.85rem;color:var(--muted);margin-inline-start:8px;cursor:pointer;text-decoration:underline}
+  .vid{position:relative;padding-top:56.25%;margin-top:10px;border-radius:12px;overflow:hidden;background:#000}
+  .vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  details.prev{margin-top:12px}
+  details.prev summary{cursor:pointer;color:var(--green-2);font-weight:600}
+  .prow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dashed var(--line);font-size:.95rem}
+  /* celebration */
+  #party{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(15,77,60,.35)}
+  #party.show{display:flex}
+  #party canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  #party .box{position:relative;background:#fff;border-radius:26px;padding:22px 26px 20px;text-align:center;max-width:320px;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+  #party .box .owl{width:130px;height:130px;animation:jump .7s ease-in-out infinite alternate}
+  #party .box .owl .wing.l{animation:flapL .35s infinite}#party .box .owl .wing.r{animation:flapR .35s infinite}
+  #party h3{margin:6px 0 2px;font-size:1.5rem;color:var(--green)}
+  #party .plus{font:800 1.3rem "Inter",sans-serif;color:#c08a00}
+  @keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes jump{from{transform:translateY(0)}to{transform:translateY(-14px)}}
   footer{padding:30px 0 40px;color:var(--muted);font-size:.9rem;text-align:center}
   footer a{color:var(--green-2)}
 </style>
@@ -79,8 +131,8 @@
 <main class="wrap">
   <h1><span data-l="ar">بوابة أولياء الأمور</span><span data-l="nl">Ouderportaal</span></h1>
   <p class="sub" id="who">
-    <span data-l="ar">تابع نتائج طفلك الشهرية وحضوره وحالة الدفع للشهر الحالي.</span>
-    <span data-l="nl">Bekijk de maandresultaten en aanwezigheid van uw kind en de betaalstatus van deze maand.</span>
+    <span data-l="ar">واجب طفلك وسورة الأسبوع، ونتائجه الشهرية وحضوره وحالة الدفع.</span>
+    <span data-l="nl">Huiswerk en soera van de week, maandresultaten, aanwezigheid en betaalstatus.</span>
   </p>
 
   <!-- 1. sign in -->
@@ -95,6 +147,11 @@
     <span><b><span data-l="ar">تسجيل الحضور</span><span data-l="nl">Aanwezigheid registreren</span></b><br>
       <span class="muted"><span data-l="ar">للمعلمين: فتح ماسح رموز الطلاب</span><span data-l="nl">Voor docenten: QR-scanner openen</span></span></span>
     <span style="font-size:1.6rem">📷</span>
+  </a>
+  <a class="card hidden" id="teacher2" href="/teacher.html" style="display:flex;align-items:center;justify-content:space-between;gap:12px;text-decoration:none;color:inherit;border-color:var(--gold);background:var(--gold-soft)">
+    <span><b><span data-l="ar">الدروس والواجبات</span><span data-l="nl">Lessen en huiswerk</span></b><br>
+      <span class="muted"><span data-l="ar">للمعلمين: كتابة درس الأسبوع ومتابعة من أنجز الواجب</span><span data-l="nl">Voor docenten: les van de week invoeren en huiswerk volgen</span></span></span>
+    <span style="font-size:1.6rem">📚</span>
   </a>
 
   <!-- 2. children -->
@@ -119,6 +176,10 @@
 
   <div class="msg err" id="err"></div>
 </main>
+
+<div id="party" role="dialog" aria-live="polite"><canvas id="confetti"></canvas>
+  <div class="box"><div id="partyOwl"></div><h3 id="partyTitle"></h3><div class="plus">+1 ⭐</div>
+    <p class="muted" id="partyText" style="margin:6px 0 12px"></p><button class="sbtn" id="partyClose" type="button">👍</button></div></div>
 
 <footer class="wrap">
   <span data-l="ar">لم يصلك رمز العائلة؟</span><span data-l="nl">Geen gezinscode ontvangen?</span>
@@ -188,6 +249,7 @@ function showError(code){
 function render(data){
   lastData=data;
   $('teacher').classList.toggle('hidden', !data.isTeacher);
+  $('teacher2').classList.toggle('hidden', !data.isTeacher);
   var kids=data.children||[], box=$('kids'), L=t(), html='';
   $('who').innerHTML=esc(L.signedIn)+'<span class="num" dir="ltr">'+esc(data.email||'')+'</span>';
   if(!kids.length){ html='<div class="card"><p class="muted" style="margin:0">'+esc(L.none)+'</p></div>'; }
@@ -204,12 +266,16 @@ function render(data){
     if(!a.total) att='<div class="att"><b>'+esc(L.attendance)+'</b><p class="muted" style="margin:4px 0 0">'+esc(L.noAtt)+'</p></div>';
     else att='<div class="att"><b>'+esc(L.attendance)+': <bdi>'+a.attended+'</bdi>'+esc(L.of)+'<bdi>'+a.total+'</bdi>'+esc(L.lessons)+'</b><div class="days">'+
       a.recent.map(function(x){var p=x.d.split('-');return '<span class="day '+(x.p?'p':'a')+'" title="'+esc(x.p?L.present:L.absent)+'">'+(x.p?'✓ ':'✗ ')+p[2]+'/'+p[1]+'</span>';}).join('')+'</div></div>';
+    var chips='<div class="kidtop"><span class="chip" title="'+esc(lang==='nl'?'sterren':'نجوم')+'">⭐ <bdi>'+(k.stars||0)+'</bdi></span>'+
+      (k.streak>1?'<span class="chip fire">🔥 <bdi>'+k.streak+'</bdi> '+esc(lang==='nl'?'op rij':'متتالية')+'</span>':'')+'</div>';
     html+='<article class="card"><div class="child-head"><div><h2>'+esc(k.name)+'</h2>'+
-          (k.group?'<div class="muted">'+esc(L.group+k.group)+'</div>':'')+'</div>'+badge+'</div>'+
+          (k.group?'<div class="muted">'+esc(L.group+k.group)+'</div>':'')+chips+'</div>'+badge+'</div>'+
+          (window.lessonHtml?lessonHtml(k):'')+
           (rows?'<table><thead><tr><th>'+L.month+'</th><th>'+L.score+'</th><th>'+L.rating+'</th><th>'+L.note+'</th></tr></thead><tbody>'+rows+'</tbody></table>'
                :'<p class="muted" style="margin:14px 0 0">'+esc(L.noResults)+'</p>')+att+'</article>';
   });
   box.innerHTML=html; box.classList.remove('hidden');
+  if(window.afterRender) afterRender(kids);
   $('link').classList.remove('hidden');
 }
 
@@ -228,7 +294,7 @@ function signOut(){
   token=null; lastData=null;
   try{sessionStorage.removeItem('tok')}catch(e){}
   if(window.google&&google.accounts) google.accounts.id.disableAutoSelect();
-  $('kids').classList.add('hidden'); $('link').classList.add('hidden'); $('teacher').classList.add('hidden');
+  $('kids').classList.add('hidden'); $('link').classList.add('hidden'); $('teacher').classList.add('hidden'); $('teacher2').classList.add('hidden');
   $('signin').classList.remove('hidden'); $('outBtn').classList.add('hidden');
 }
 
@@ -257,5 +323,7 @@ $('langBtn').addEventListener('click',function(){setLang(lang==='nl'?'ar':'nl')}
   })();
 })();
 </script>
+<script src="/q.js"></script>
+<script src="/portal-lessons.js"></script>
 </body>
 </html>
