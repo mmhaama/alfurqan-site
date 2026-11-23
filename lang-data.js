@@ -143,3 +143,24 @@ window.LANG_UNITS = {
     ]
   }
 };
+
+/* Native-speaker recordings from Lingua Libre (Wikimedia Commons), matched to our vowelling.
+   key = word without harakat → [speaker, file word]. Words not listed here use the device voice. */
+window.LANG_AUDIO = {
+  'أنام': ['Spotless Mind1988', 'أَنَام'], 'باب': ['Zinou2go', 'بَاب'], 'برتقالة': ['Rashed Aljahdali', 'برتقالة'], 'برج': ['Fjmustak', 'برج'],
+  'بطة': ['Zinou2go', 'بَطَّة'], 'بطيخ': ['Rashed Aljahdali', 'بطيخ'], 'بنت': ['AlNatiq', 'بنت'], 'بومة': ['Rashed Aljahdali', 'بومة'],
+  'بيت': ['Zinou2go', 'بَيْت'], 'بيتزا': ['Fjmustak', 'بيتزا'], 'بحر': ['Zinou2go', 'بَحْر'], 'بقرة': ['Zinou2go', 'بَقَرَة'],
+  'بنطال': ['Zinou2go', 'بِنْطَال'], 'جامع': ['Fjmustak', 'جامع'], 'حلوى': ['Fjmustak', 'حلوى'], 'خبز': ['Zinou2go', 'خُبْز'],
+  'ديك': ['Fjmustak', 'ديك'], 'زرافة': ['AlNatiq', 'زرافة'], 'سبعة': ['Zinou2go', 'سبعة'], 'سلحفاة': ['Fjmustak', 'سلحفاة'],
+  'سمكة': ['AlNatiq', 'سمكة'], 'سنجاب': ['Zinou2go', 'سنجاب'], 'سيف': ['Zinou2go', 'سيف'], 'صفر': ['Zinou2go', 'صِفْر'],
+  'طفل': ['AlNatiq', 'طفل'], 'طائرة': ['Spotless Mind1988', 'طَائِرَة'], 'عسل': ['Fjmustak', 'عسل'], 'عصفور': ['Fjmustak', 'عصفور'],
+  'عنب': ['AlNatiq', 'عنب'], 'غزال': ['Fjmustak', 'غزال'], 'فأر': ['Rashed Aljahdali', 'فأر'], 'فانوس': ['Rashed Aljahdali', 'فانوس'],
+  'فراشة': ['Fjmustak', 'فراشة'], 'فضة': ['AlNatiq', 'فضة'], 'فطور': ['Fjmustak', 'فطور'], 'فنجان': ['Fjmustak', 'فنجان'],
+  'فيل': ['Zinou2go', 'فيل'], 'قطة': ['AlNatiq', 'قطة'], 'قلب': ['Ov3for', 'قلب'], 'قمر': ['Zinou2go', 'قَمَر'],
+  'كتاب': ['Zinou2go', 'كتاب'], 'كلب': ['Zinou2go', 'كَلْب'], 'لحية': ['AlNatiq', 'لحية'], 'لسان': ['Shahjina', 'لسان'],
+  'ليمون': ['AlNatiq', 'ليمون'], 'ملح': ['Raghda (Akbarali)', 'ملح'], 'موز': ['AlNatiq', 'موز'], 'منزل': ['Zinou2go', 'مَنْزِل'],
+  'نخلة': ['Shahjina', 'نخلة'], 'نظارة': ['Fjmustak', 'نظارة'], 'نقود': ['Fjmustak', 'نقود'], 'نمر': ['Zinou2go', 'نَمِر'],
+  'نجمة': ['Zinou2go', 'نَجْمَة'], 'وردة': ['Rashed Aljahdali', 'وردة']
+};
+window.LANG_AUDIO_LIC = { 'Zinou2go': 'CC BY-SA 3.0', 'Spotless Mind1988': 'CC BY-SA 4.0', 'Fjmustak': 'CC BY-SA 4.0', 'Ov3for': 'CC0',
+  'Raghda (Akbarali)': 'CC BY-SA 4.0', 'Shahjina': 'CC0', 'AlNatiq': 'CC0', 'Rashed Aljahdali': 'CC BY 4.0' };
