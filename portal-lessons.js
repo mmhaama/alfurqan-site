@@ -21,6 +21,7 @@
       bravo: 'أحسنت يا ', partyText: 'بارك الله فيك! استمر هكذا 🌟', loading: 'جارٍ التحميل…', qErr: 'تعذّر تحميل الآيات. حاول مرة أخرى.',
       doneShort: '✓ أُنجز', notDone: 'لم يُنجز', allGroups: 'كل المجموعات', grp: 'المجموعة ',
       pr: 'تدريب هذا الأسبوع', min: ' دقيقة', of: ' من ', days: 'أيام التدريب: ', last: 'آخر تدريب: ', never: 'لم يبدأ التدريب بعد', today: 'اليوم', yest: 'أمس',
+      arabic: 'اللغة العربية', book: 'الكتاب ص ', langGo: '▶ ابدأ تمارين اللغة', langAgain: '🔁 أعد التمارين', langDone: 'أنهيتَ التمارين', print: 'ورقة للطباعة',
       libLessons: 'الدروس السابقة', libSurahs: 'السور المحفوظة', libHint: 'اضغط على السورة لتسمعها وتراجعها. وقت المراجعة يُحسب في تدريب الأسبوع 🎧', noOld: 'لا توجد دروس سابقة بعد.', ayatN: ' آيات', fullSurah: 'السورة كاملة',
       goalHit: 'حققتَ هدف الأسبوع! 🎯', goalText: 'استمعتَ للتلاوة وتدربتَ كل هذا الوقت. ما شاء الله!', listenHint: 'استمع للتلاوة وكرّر الآيات لتملأ الدائرة 🎧' },
     nl: { week: 'Les van deze week', hi: 'Hallo ', surah: 'Soera om te leren', ayat: 'Verzen ', to: ' t/m ', listen: '▶ Luister',
@@ -30,6 +31,7 @@
       bravo: 'Goed gedaan, ', partyText: 'Ga zo door! 🌟', loading: 'Laden…', qErr: 'Verzen konden niet worden geladen. Probeer opnieuw.',
       doneShort: '✓ gedaan', notDone: 'niet gedaan', allGroups: 'alle groepen', grp: 'Groep ',
       pr: 'Oefenen deze week', min: ' min', of: ' van ', days: 'Oefendagen: ', last: 'Laatst geoefend: ', never: 'Nog niet geoefend', today: 'vandaag', yest: 'gisteren',
+      arabic: 'Arabisch', book: 'boek p. ', langGo: '▶ Start de oefeningen', langAgain: '🔁 Opnieuw oefenen', langDone: 'Oefeningen af', print: 'Werkblad printen',
       libLessons: 'Vorige lessen', libSurahs: 'Geleerde soera\'s', libHint: 'Tik op een soera om te luisteren en te herhalen. Herhalen telt mee voor het weekdoel 🎧', noOld: 'Nog geen vorige lessen.', ayatN: ' verzen', fullSurah: 'Hele soera',
       goalHit: 'Weekdoel gehaald! 🎯', goalText: 'Je hebt deze week flink geluisterd en geoefend. Knap gedaan!', listenHint: 'Luister naar de recitatie en herhaal de verzen om de cirkel te vullen 🎧' }
   };
@@ -167,9 +169,30 @@
       '<div class="muted" style="font-size:.85rem;margin-top:4px">' + esc(L.tap) + '</div>' +
       '<div class="ctrl"><button class="sbtn alt" type="button" data-kids="' + surah + '" data-key="' + key + '">' + esc(L.kids) + '</button></div></div>';
   }
+  function langSec(k, l, key) {
+    var u = LangRun.units[l.lang], L = w(), d = 0;
+    try { d = +localStorage.getItem('lx_' + k.num + '_' + l.lang) || 0; } catch (e) {}
+    return '<div class="sec"><h4>🔤 ' + esc(L.arabic) + ': ' + esc(u.title) + '</h4><div class="muted">' + (lang === 'nl' ? esc(u.nl) + ' · ' : '') + '📕 ' + esc(L.book + u.pages) + '</div>' +
+      (d ? '<div class="done-ok" style="margin-top:8px">' + '⭐'.repeat(d) + ' ' + esc(L.langDone) + '</div>' : '') +
+      '<div class="ctrl"><button class="sbtn gold" type="button" data-langgo="' + esc(l.lang) + '" data-key="' + key + '" data-num="' + k.num + '">' + esc(d ? L.langAgain : L.langGo) + '</button>' +
+      '<a class="sbtn alt" style="text-decoration:none" href="/lang.html?u=' + encodeURIComponent(l.lang) + '&print=1" target="_blank" rel="noopener">🖨️ ' + esc(L.print) + '</a></div></div>';
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-langgo]'); if (!b || !window.LangRun) return;
+    stopAll();
+    var num = b.dataset.num, key = b.dataset.key, unit = b.dataset.langgo;
+    LangRun.open(unit, {
+      onTime: function (s) { addAct(key, s, 0); },
+      onDone: function (ok, tot, stars) {
+        try { var prev = +localStorage.getItem('lx_' + num + '_' + unit) || 0; if (stars > prev) localStorage.setItem('lx_' + num + '_' + unit, stars); } catch (e) {}
+        post({ action: 'activity', num: num, lesson: 'U-' + unit, reps: ok }); flush();
+      }
+    });
+  });
   function lessonBody(k, l) {
     var L = w(), key = k.num + '_' + l.id, h = '';
     if (l.surah) h += surahSec(key, l.surah, l.from || 1, l.to || AYAHS[l.surah - 1]);
+    if (l.lang && window.LangRun && LangRun.units[l.lang]) h += langSec(k, l, key);
     if (l.homework) h += '<div class="sec"><h4>✏️ ' + esc(L.hw) + '</h4><p>' + esc(tr(l, 'homework')) + '</p></div>';
     if (l.topic || l.text || l.video) {
       var id = ytId(l.video);
@@ -344,6 +367,7 @@
       if (t < 200) raf = requestAnimationFrame(frame); else ctx.clearRect(0, 0, W2, H);
     })();
   }
+  window.confettiBurst = function () { confetti(); chime(); };
   function party(name, title, text) {
     var L = w();
     document.getElementById('partyOwl').innerHTML = owlSvg();
