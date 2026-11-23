@@ -125,14 +125,15 @@
 <script>
 var CLIENT_ID = '245259754538-snhtq8dl043apofpnsg1c9ihnlsmslh8.apps.googleusercontent.com';
 var API_URL   = 'https://script.google.com/macros/s/AKfycbz0SWv9GEW0fZg3ZYK_D5MAnx4cjc0Y8_Wfx_EydxjNKcKvpnCTUqCKw-IbWif-uOg/exec';
-var token=null, lessons=[];
+var token=null, lessons=[], sess=null;
+try{ sess=localStorage.getItem('sess'); }catch(e){}
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function today(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
 function fmt(d){var p=String(d).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d}
 var ERR={not_teacher:'هذا الحساب ليس من حسابات المعلمين.',session_expired:'انتهت الجلسة، سجّل الدخول مجدداً.',bad_date:'اختر تاريخ الحصة.',
   bad_video:'رابط الفيديو يجب أن يبدأ بـ https://',network:'تعذّر الاتصال. حاول مرة أخرى.'};
-function api(p){p.idToken=token;return fetch(API_URL,{method:'POST',body:JSON.stringify(p)}).then(function(r){return r.json()}).catch(function(){return{ok:false,error:'network'}})}
+function api(p){if(sess)p.session=sess;else p.idToken=token;return fetch(API_URL,{method:'POST',body:JSON.stringify(p)}).then(function(r){return r.json()}).then(function(d){if(d&&d.session){sess=d.session;try{localStorage.setItem('sess',sess)}catch(e){}}return d}).catch(function(){return{ok:false,error:'network'}})}
 function showErr(e){$('err').textContent=ERR[e]||('حدث خطأ: '+e);if(e==='session_expired'||e==='bad_token'){signOut()}}
 
 /* surah select */
@@ -222,14 +223,14 @@ function start(){
     $('formCard').classList.remove('hidden'); resetForm(); show(d);
   });
 }
-function signOut(){token=null;try{sessionStorage.removeItem('tok')}catch(e){}
+function signOut(){token=null;sess=null;try{sessionStorage.removeItem('tok');localStorage.removeItem('sess')}catch(e){}
   $('formCard').classList.add('hidden');$('listCard').classList.add('hidden');$('signin').classList.remove('hidden')}
 function onCredential(r){token=r.credential;try{sessionStorage.setItem('tok',token)}catch(e){}start()}
 
 (function init(){
   $('date').value=today(); syncAyahs(true);
   try{token=sessionStorage.getItem('tok')}catch(e){}
-  if(token) start();
+  if(sess||token) start();
   (function waitGsi(){
     if(!(window.google&&google.accounts&&google.accounts.id)) return setTimeout(waitGsi,150);
     google.accounts.id.initialize({client_id:CLIENT_ID,callback:onCredential});
