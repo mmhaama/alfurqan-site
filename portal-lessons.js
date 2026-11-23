@@ -21,6 +21,7 @@
       bravo: 'أحسنت يا ', partyText: 'بارك الله فيك! استمر هكذا 🌟', loading: 'جارٍ التحميل…', qErr: 'تعذّر تحميل الآيات. حاول مرة أخرى.',
       doneShort: '✓ أُنجز', notDone: 'لم يُنجز', allGroups: 'كل المجموعات', grp: 'المجموعة ',
       pr: 'تدريب هذا الأسبوع', min: ' دقيقة', of: ' من ', days: 'أيام التدريب: ', last: 'آخر تدريب: ', never: 'لم يبدأ التدريب بعد', today: 'اليوم', yest: 'أمس',
+      libLessons: 'الدروس السابقة', libSurahs: 'السور المحفوظة', libHint: 'اضغط على السورة لتسمعها وتراجعها. وقت المراجعة يُحسب في تدريب الأسبوع 🎧', noOld: 'لا توجد دروس سابقة بعد.', ayatN: ' آيات', fullSurah: 'السورة كاملة',
       goalHit: 'حققتَ هدف الأسبوع! 🎯', goalText: 'استمعتَ للتلاوة وتدربتَ كل هذا الوقت. ما شاء الله!', listenHint: 'استمع للتلاوة وكرّر الآيات لتملأ الدائرة 🎧' },
     nl: { week: 'Les van deze week', hi: 'Hallo ', surah: 'Soera om te leren', ayat: 'Verzen ', to: ' t/m ', listen: '▶ Luister',
       stop: '■ Stop', repeat: 'Herhalen', times: 'x', once: '1x', reciter: 'Recitator', kids: '🎧 Hele soera met kinderen',
@@ -29,6 +30,7 @@
       bravo: 'Goed gedaan, ', partyText: 'Ga zo door! 🌟', loading: 'Laden…', qErr: 'Verzen konden niet worden geladen. Probeer opnieuw.',
       doneShort: '✓ gedaan', notDone: 'niet gedaan', allGroups: 'alle groepen', grp: 'Groep ',
       pr: 'Oefenen deze week', min: ' min', of: ' van ', days: 'Oefendagen: ', last: 'Laatst geoefend: ', never: 'Nog niet geoefend', today: 'vandaag', yest: 'gisteren',
+      libLessons: 'Vorige lessen', libSurahs: 'Geleerde soera\'s', libHint: 'Tik op een soera om te luisteren en te herhalen. Herhalen telt mee voor het weekdoel 🎧', noOld: 'Nog geen vorige lessen.', ayatN: ' verzen', fullSurah: 'Hele soera',
       goalHit: 'Weekdoel gehaald! 🎯', goalText: 'Je hebt deze week flink geluisterd en geoefend. Knap gedaan!', listenHint: 'Luister naar de recitatie en herhaal de verzen om de cirkel te vullen 🎧' }
   };
   function w() { return W[lang] || W.ar; }
@@ -45,6 +47,11 @@
       '.nltr{direction:ltr;text-align:left;font-family:Inter,system-ui,sans-serif;font-size:.95rem;line-height:1.6;color:#3d4b47;margin:2px 0 4px}' +
       '.nltr b{color:#8a6510;margin-right:6px}.trsrc{font-size:.75rem;color:#8a9692;margin-top:6px;direction:ltr;text-align:left}' +
       '.prac{display:flex;align-items:center;gap:14px;margin-top:12px;background:#fff;border:1px solid #e7dfcc;border-radius:14px;padding:10px 14px}' +
+      '.olds{background:#fff;border:1px solid #e7dfcc;border-radius:14px;margin-top:8px;overflow:hidden}.olds>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;gap:10px}' +
+      '.olds>summary::-webkit-details-marker{display:none}.olds>summary .st{flex:1;min-width:0}.olds>summary b{display:block}.olds>summary .muted{font-size:.82rem}' +
+      '.olds>summary:after{content:"▾";color:#0f4d3c;transition:transform .2s}.olds[open]>summary:after{transform:rotate(180deg)}.olds[open]>summary{border-bottom:1px solid #e7dfcc;background:#f7f3e8}' +
+      '.olds .obody{padding:0 10px 12px}.olds .sec{margin-top:10px}.libh{font-size:1.05rem;color:#0f4d3c;margin:16px 0 4px;display:flex;align-items:center;gap:8px}.libh .cnt{font:700 .8rem Inter,sans-serif;background:#efe8d6;border-radius:999px;padding:1px 9px;color:#5b6b66}' +
+      '.snum{flex:0 0 34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e3f3ea;color:#1f7a4d;font:700 .85rem Inter,sans-serif}.okd{color:#1f7a4d;font-size:.85rem;white-space:nowrap}' +
       '.prac svg{width:64px;height:64px;flex:0 0 64px}.prac .rv{transition:stroke-dashoffset .6s ease}.prac b{color:#0f4d3c}.prac .muted{font-size:.85rem}';
     document.head.appendChild(st);
   })();
@@ -146,29 +153,23 @@
     return m ? m[1] : '';
   }
 
-  /* ---------- lesson html for one child ---------- */
-  window.lessonHtml = function (k) {
-    var L = w(), ls = k.lessons || [];
-    if (!ls.length) {
-      return '<div class="lesson"><div class="lhead">' + owlSvg() + '<div><h3>' + esc(L.week) + '</h3>' +
-        '<div class="muted">' + esc(L.noLesson) + '</div></div></div>' + pracHtml(k) + '</div>';
-    }
-    var l = ls[0], key = k.num + '_' + l.id, h = '';
-    h += '<div class="lesson"><div class="lhead">' + owlSvg() + '<div><h3>' + esc(L.week) + '</h3><div class="muted">' +
-      esc(L.hi + first(k.name)) + ' 👋 · <bdi>' + esc(fmtDate(l.date)) + '</bdi></div></div></div>' + pracHtml(k);
-    if (l.surah) {
-      var from = l.from || 1, to = l.to || AYAHS[l.surah - 1];
-      h += '<div class="sec"><h4>📖 ' + esc(L.surah) + ': ' + esc((lang === 'nl' ? 'Soera ' : 'سورة ') + surahName(l.surah)) + '</h4>' +
-        '<div class="muted">' + esc(L.ayat) + '<bdi>' + from + '</bdi>' + esc(L.to) + '<bdi>' + to + '</bdi></div>' +
-        '<div class="ctrl"><button class="sbtn" type="button" data-play="' + key + '">' + esc(L.listen) + '</button>' +
-        '<label class="muted" style="margin:0;font-weight:400">' + esc(L.repeat) + ' <select data-rep="' + key + '">' +
-        '<option value="1">' + esc(L.once) + '</option><option value="3">3' + esc(L.times) + '</option><option value="5">5' + esc(L.times) + '</option></select></label>' +
-        '<label class="muted" style="margin:0;font-weight:400">' + esc(L.reciter) + ' <select data-rec="' + key + '">' +
-        RECITERS.map(function (r) { return '<option value="' + r.id + '">' + esc(r[lang] || r.ar) + '</option>'; }).join('') + '</select></label></div>' +
-        '<div class="quran" id="q_' + key + '" data-s="' + l.surah + '" data-f="' + from + '" data-t="' + to + '"><span class="muted" style="font-family:inherit;font-size:.9rem">' + esc(L.loading) + '</span></div>' +
-        '<div class="muted" style="font-size:.85rem;margin-top:4px">' + esc(L.tap) + '</div>' +
-        '<div class="ctrl"><button class="sbtn alt" type="button" data-kids="' + l.surah + '" data-key="' + key + '">' + esc(L.kids) + '</button></div></div>';
-    }
+  /* ---------- building blocks ---------- */
+  function surahSec(key, surah, from, to, title) {
+    var L = w();
+    return '<div class="sec"><h4>📖 ' + esc(title || L.surah) + ': ' + esc((lang === 'nl' ? 'Soera ' : 'سورة ') + surahName(surah)) + '</h4>' +
+      '<div class="muted">' + esc(L.ayat) + '<bdi>' + from + '</bdi>' + esc(L.to) + '<bdi>' + to + '</bdi></div>' +
+      '<div class="ctrl"><button class="sbtn" type="button" data-play="' + key + '">' + esc(L.listen) + '</button>' +
+      '<label class="muted" style="margin:0;font-weight:400">' + esc(L.repeat) + ' <select data-rep="' + key + '">' +
+      '<option value="1">' + esc(L.once) + '</option><option value="3">3' + esc(L.times) + '</option><option value="5">5' + esc(L.times) + '</option></select></label>' +
+      '<label class="muted" style="margin:0;font-weight:400">' + esc(L.reciter) + ' <select data-rec="' + key + '">' +
+      RECITERS.map(function (r) { return '<option value="' + r.id + '">' + esc(r[lang] || r.ar) + '</option>'; }).join('') + '</select></label></div>' +
+      '<div class="quran" id="q_' + key + '" data-s="' + surah + '" data-f="' + from + '" data-t="' + to + '"><span class="muted" style="font-family:inherit;font-size:.9rem">' + esc(L.loading) + '</span></div>' +
+      '<div class="muted" style="font-size:.85rem;margin-top:4px">' + esc(L.tap) + '</div>' +
+      '<div class="ctrl"><button class="sbtn alt" type="button" data-kids="' + surah + '" data-key="' + key + '">' + esc(L.kids) + '</button></div></div>';
+  }
+  function lessonBody(k, l) {
+    var L = w(), key = k.num + '_' + l.id, h = '';
+    if (l.surah) h += surahSec(key, l.surah, l.from || 1, l.to || AYAHS[l.surah - 1]);
     if (l.homework) h += '<div class="sec"><h4>✏️ ' + esc(L.hw) + '</h4><p>' + esc(tr(l, 'homework')) + '</p></div>';
     if (l.topic || l.text || l.video) {
       var id = ytId(l.video);
@@ -182,16 +183,55 @@
         ? '<div class="done-ok">' + esc(L.doneOk) + '<a data-undo="' + k.num + '|' + l.id + '">' + esc(L.undo) + '</a></div>'
         : '<button class="done-btn" type="button" data-done="' + k.num + '|' + l.id + '" data-name="' + esc(first(k.name)) + '">' + esc(L.done) + '</button>';
     }
-    if (ls.length > 1) {
-      h += '<details class="prev"><summary>' + esc(L.prev) + '</summary>' + ls.slice(1).map(function (p) {
-        var what = [p.surah ? (lang === 'nl' ? 'Soera ' : 'سورة ') + surahName(p.surah) + ' ' + (p.from || 1) + '–' + (p.to || AYAHS[p.surah - 1]) : '', tr(p, 'topic')].filter(Boolean).join(' · ');
-        return '<div class="prow"><span><bdi>' + esc(fmtDate(p.date)) + '</bdi> · ' + esc(what || tr(p, 'homework')) + '</span>' +
-          (p.done ? '<span style="color:var(--ok);white-space:nowrap">' + esc(L.doneShort) + '</span>'
-                  : '<button class="sbtn alt" style="padding:4px 12px;font-size:.85rem" type="button" data-done="' + k.num + '|' + p.id + '" data-name="' + esc(first(k.name)) + '">✅</button>') + '</div>';
-      }).join('') + '</details>';
+    return h;
+  }
+
+  /* ---------- lesson of the week (newest lesson only) ---------- */
+  window.lessonHtml = function (k) {
+    var L = w(), ls = k.lessons || [];
+    if (!ls.length) {
+      return '<div class="lesson"><div class="lhead">' + owlSvg() + '<div><h3>' + esc(L.week) + '</h3>' +
+        '<div class="muted">' + esc(L.noLesson) + '</div></div></div>' + pracHtml(k) + '</div>';
+    }
+    var l = ls[0];
+    return '<div class="lesson"><div class="lhead">' + owlSvg() + '<div><h3>' + esc(L.week) + '</h3><div class="muted">' +
+      esc(L.hi + first(k.name)) + ' 👋 · <bdi>' + esc(fmtDate(l.date)) + '</bdi></div></div></div>' + pracHtml(k) + lessonBody(k, l) + '</div>';
+  };
+
+  /* ---------- library: all older lessons + every surah learned so far ---------- */
+  function learnedSurahs(k) {
+    var ls = k.lessons || [], cur = ls[0] && ls[0].surah, set = {};
+    if (cur) for (var n = cur + 1; n <= 114; n++) set[n] = 1;   // the class learns from An-Nas upwards
+    ls.slice(1).forEach(function (l) { if (l.surah && l.surah !== cur) set[l.surah] = 1; });
+    return Object.keys(set).map(Number).sort(function (a, b) { return Math.abs(a - (cur || 115)) - Math.abs(b - (cur || 115)); });
+  }
+  window.libraryHtml = function (k) {
+    var L = w(), ls = (k.lessons || []).slice(1), sur = learnedSurahs(k), h = '<div class="panel">';
+    h += '<h3 class="libh">🗂️ ' + esc(L.libLessons) + ' <span class="cnt">' + ls.length + '</span></h3>';
+    if (!ls.length) h += '<p class="muted" style="margin:4px 0 0">' + esc(L.noOld) + '</p>';
+    ls.forEach(function (l) {
+      var what = [l.surah ? (lang === 'nl' ? 'Soera ' : 'سورة ') + surahName(l.surah) : '', tr(l, 'topic')].filter(Boolean).join(' · ');
+      h += '<details class="olds"><summary><span class="st"><b>' + esc(what || tr(l, 'homework')) + '</b><span class="muted"><bdi>' + esc(fmtDate(l.date)) + '</bdi></span></span>' +
+        ((l.homework || l.surah) ? (l.done ? '<span class="okd">' + esc(L.doneShort) + '</span>' : '<span class="muted" style="font-size:.8rem">' + esc(L.notDone) + '</span>') : '') +
+        '</summary><div class="obody">' + lessonBody(k, l) + '</div></details>';
+    });
+    if (sur.length) {
+      h += '<h3 class="libh">📖 ' + esc(L.libSurahs) + ' <span class="cnt">' + sur.length + '</span></h3><p class="muted" style="margin:0 0 4px;font-size:.85rem">' + esc(L.libHint) + '</p>';
+      sur.forEach(function (n) {
+        h += '<details class="olds"><summary><span class="snum">' + n + '</span><span class="st"><b>' + esc((lang === 'nl' ? 'Soera ' : 'سورة ') + surahName(n)) + '</b>' +
+          '<span class="muted"><bdi>' + AYAHS[n - 1] + '</bdi>' + esc(L.ayatN) + '</span></span></summary><div class="obody">' +
+          surahSec(k.num + '_S' + n, n, 1, AYAHS[n - 1], L.fullSurah) + '</div></details>';
+      });
     }
     return h + '</div>';
   };
+  /* fill Quran text only when a library item is opened */
+  document.addEventListener('toggle', function (e) {
+    var d = e.target;
+    if (!d.classList || !d.classList.contains('olds')) return;
+    if (!d.open) { if (curBox && d.contains(curBox)) stopAll(); return; }
+    [].forEach.call(d.querySelectorAll('.quran[data-s]:not([data-filled])'), fillQuran);
+  }, true);
 
   /* ---------- Quran text ---------- */
   var qCache = {};
@@ -214,6 +254,7 @@
   var BSM = /^(بِسْمِ|بِّسْمِ)\s+\S+\s+\S+\s+\S+\s*/;
   function fillQuran(el) {
     var s = +el.dataset.s, f = +el.dataset.f, to = +el.dataset.t;
+    el.setAttribute('data-filled', '1');
     loadSurah(s).then(function (ayahs) {
       var h = '';
       var hf = !!ayahs.hafs;
@@ -355,7 +396,7 @@
 
   window.afterRender = function (kids) {
     stopAll(); flush(); liveSecs = {};
-    [].forEach.call(document.querySelectorAll('.quran[data-s]'), fillQuran);
+    [].forEach.call(document.querySelectorAll('.quran[data-s]'), function (el) { if (!el.closest('details:not([open])')) fillQuran(el); });
     (kids || []).forEach(function (k) { updateRing(k.num); });
     markOpened(kids);
   };
