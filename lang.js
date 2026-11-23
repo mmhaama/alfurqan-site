@@ -18,22 +18,30 @@
     voice = v.find(function (x) { return /google/i.test(x.name); }) || v[0] || null;
   }
   if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-  /* native recordings (Lingua Libre) first, device voice as fallback */
-  var LA = window.LANG_AUDIO || {}, rec = new Audio();
+  /* 1) native recording (Lingua Libre)  2) our generated recording /audio/tts/<key>.mp3  3) device voice */
+  var LA = window.LANG_AUDIO || {}, rec = new Audio(), sayN = 0;
   function llKey(t) { return bare(t).replace(/[.،؟!]/g, '').trim(); }
   function llUrl(a) { return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(('LL-Q13955 (ara)-' + a[0] + '-' + a[1] + '.wav').replace(/ /g, '_')); }
+  function ttsKey(t) {  /* FNV-1a 32-bit of the normalized text — same as tools/tts/gen.py */
+    var b = new TextEncoder().encode(String(t).replace(/\u0640/g, '').trim().split(/\s+/).join(' ')), h = 0x811c9dc5;
+    for (var i = 0; i < b.length; i++) { h ^= b[i]; h = Math.imul(h, 0x01000193) >>> 0; }
+    return ('0000000' + h.toString(16)).slice(-8);
+  }
+  function ttsUrl(t) { return '/audio/tts/' + ttsKey(t) + '.mp3'; }
   function say(t) {
     if (!t) return;
-    var a = LA[llKey(t)];
+    var n = ++sayN, a = LA[llKey(t)], urls = [];
+    if (a) urls.push(llUrl(a));
+    urls.push(ttsUrl(t));
     try { rec.pause(); } catch (e) {}
-    if (a) {
-      try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
-      rec.src = llUrl(a);
-      rec.onerror = function () { tts(t); };
-      rec.play().catch(function () { tts(t); });
-      return;
-    }
-    tts(t);
+    try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
+    (function next(i) {
+      if (n !== sayN) return;
+      if (i >= urls.length) { tts(t); return; }
+      var done = false, fail = function () { if (done || n !== sayN) return; done = true; next(i + 1); };
+      rec.onerror = fail; rec.src = urls[i];
+      var p = rec.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') return; fail(); });
+    })(0);
   }
   function tts(t) {
     if (!window.speechSynthesis || !t) return;
