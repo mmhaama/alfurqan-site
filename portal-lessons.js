@@ -105,7 +105,8 @@
     var L = w(), goal = +el.dataset.goal, secs = +el.dataset.base + (liveSecs[num] || 0);
     var pct = Math.min(1, secs / goal), mins = Math.floor(secs / 60);
     el.querySelector('.rv').setAttribute('stroke-dashoffset', (163.4 * (1 - pct)).toFixed(1));
-    el.querySelector('text').textContent = Math.round(pct * 100) + '%';
+    el.querySelector('text').textContent = Math.round(secs / goal * 100) + '%';
+    el.querySelector('.rv').setAttribute('stroke', secs > goal ? '#e0a526' : '#2bb673');   // gold when above the goal
     el.querySelector('.pv').innerHTML = '<bdi>' + mins + '</bdi>' + esc(L.of) + '<bdi>' + Math.round(goal / 60) + '</bdi>' + esc(L.min) +
       (secs < 60 ? ' · <span class="muted">' + esc(L.listenHint) + '</span>' : '');
     var sp = el.querySelector('.sp');
