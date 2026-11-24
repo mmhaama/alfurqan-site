@@ -98,7 +98,7 @@
       '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#eee6d2" stroke-width="7"/>' +
       '<circle class="rv" cx="32" cy="32" r="26" fill="none" stroke="#2bb673" stroke-width="7" stroke-linecap="round" transform="rotate(-90 32 32)" stroke-dasharray="163.4" stroke-dashoffset="163.4"/>' +
       '<text x="32" y="37" text-anchor="middle" font-size="15" font-weight="700" fill="#0f4d3c" font-family="Inter,sans-serif">0%</text></svg>' +
-      '<div><b>🎧 ' + esc(L.pr) + '</b><div class="pv"></div><div class="muted sp" style="font-size:.9rem"></div><div class="muted">' + esc(L.days) + '<bdi>' + (p.weekDays || 0) + '</bdi> · ' + esc(lastTxt(p.last)) + '</div></div></div>';
+      '<div><b>⏱️ ' + esc(L.pr) + '</b><div class="pv"></div><div class="muted sp" style="font-size:.9rem"></div><div class="muted">' + esc(L.days) + '<bdi>' + (p.weekDays || 0) + '</bdi> · ' + esc(lastTxt(p.last)) + '</div></div></div>';
   }
   function updateRing(num) {
     var el = document.getElementById('pr_' + num); if (!el) return;
