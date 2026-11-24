@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "nl.alfurqanacademie.app",
+    "sha256_cert_fingerprints": ["C8:A5:9A:5B:86:2A:22:A6:17:34:34:49:95:FF:5C:B7:0B:E6:92:2C:B7:51:BE:D2:0A:7A:A9:CD:A5:9F:6E:C5"]
+  }
+}]
