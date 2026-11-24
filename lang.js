@@ -165,7 +165,7 @@
     function add(w, e) { var k = llKey(w); if (!w || !e || seen[k] || /[ _]/.test(w.trim())) return; seen[k] = 1; out.push({ w: w.replace(/[\u064C\u064D]$/, ''), e: e }); }
     (ids || []).forEach(function (id) {
       var u = U[id]; if (!u) return;
-      if (u.level === 1) { GROUPS.forEach(function (g) { u.words[g].forEach(function (w) { add(w[0], w[1]); }); }); (u.extra || []).forEach(function (w) { add(w[0], w[1]); }); }
+      if (u.letter) { GROUPS.forEach(function (g) { u.words[g].forEach(function (w) { add(w[0], w[1]); }); }); (u.extra || []).forEach(function (w) { add(w[0], w[1]); }); }
       else { u.examples.forEach(function (e) { add(e[0].replace(/^هَذَا |^هَذِهِ |\.$/g, ''), e[1]); }); u.ex.forEach(function (x) { if (x.t === 'choose' || x.t === 'sort') x.items.forEach(function (it) { add(it[3] || it[0], it[1]); }); }); }
     });
     return out;
@@ -246,7 +246,7 @@
   function open(id, opts) {
     var u = U[id]; if (!u) return;
     ensure();
-    cur = { id: id, u: u, opts: opts || {}, s: u.level === 1 ? letterScreens(u) : grammarScreens(u), i: 0, ok: 0, tot: 0, tried: false, t0: Date.now(), tick: Date.now() };
+    cur = { id: id, u: u, opts: opts || {}, s: u.letter ? letterScreens(u) : grammarScreens(u), i: 0, ok: 0, tot: 0, tried: false, t0: Date.now(), tick: Date.now() };
     cur.s.forEach(function (x) { if (x.t === 'mcq' || x.t === 'order' || x.t === 'read' || x.t === 'bub') cur.tot++; });
     document.getElementById('lxT').textContent = '🔤 ' + u.title;
     ov.classList.add('show'); document.body.style.overflow = 'hidden';
@@ -402,7 +402,7 @@
     var h = '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>' + esc(u.title) + '</title>' +
       '<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">' + css + '</head><body>' +
       '<button onclick="print()" style="float:left;padding:8px 16px">🖨️ طباعة</button><h1>' + esc(u.title) + '</h1><p class="sub">أكاديمية الفرقان · ورقة عمل · الاسم: ........................</p>';
-    if (u.level === 1) {
+    if (u.letter) {
       h += '<h2>١. تَتَبَّعْ أَشْكَالَ الحَرْفِ:</h2><div class="tr">' + u.forms.map(function (f) { return '<span>' + esc(f) + '</span>'; }).join('') + '</div>';
       h += '<h2>٢. تَتَبَّعْ ثُمَّ اكْتُبْ:</h2>' + u.marks.map(function (m) { return '<div class="ln"><span class="g">' + esc(m) + '</span><span class="g">' + esc(m) + '</span><span class="g">' + esc(m) + '</span></div>'; }).join('');
       h += '<h2>٣. انْسَخِ الكَلِمَاتِ:</h2>' + GROUPS.map(function (g) { var w = u.words[g][0]; return '<div class="ln"><span>' + (/^[\u0660-\u0669]+$/.test(w[1]) ? '' : w[1] + ' ') + esc(w[0]) + '</span></div>'; }).join('');
@@ -414,5 +414,5 @@
   }
 
   window.LangRun = { open: open, close: close, units: U, printSheet: printSheet, say: say, game: openGame, pool: pool,
-    screens: function (id) { var u = U[id]; return u ? (u.level === 1 ? letterScreens(u) : grammarScreens(u)) : []; } };
+    screens: function (id) { var u = U[id]; return u ? (u.letter ? letterScreens(u) : grammarScreens(u)) : []; } };
 })();
