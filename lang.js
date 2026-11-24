@@ -151,7 +151,7 @@
       if (x.t === 'pick') x.items.forEach(function (it) { s.push({ t: 'mcq', q: x.q, e: it[0], html: '', opts: it[1], a: it[2], small: true, sayOpts: true }); });
       if (x.t === 'sort') shuffle(x.items).forEach(function (it) { s.push({ t: 'mcq', q: x.q, e: it[1], html: esc(it[0]), say: it[0], opts: x.cats, a: it[2], small: true }); });
       if (x.t === 'order') x.items.forEach(function (it) { s.push({ t: 'order', q: x.q, e: it[0], say: it[1].join(x.join == null ? ' ' : x.join), toks: it[1], join: x.join == null ? ' ' : x.join }); });
-      if (x.t === 'read') s.push({ t: 'read', q: x.q, e: x.e, text: x.text, ask: x.ask, opts: x.opts, a: x.a });
+      if (x.t === 'read') s.push({ t: 'read', q: x.q, e: x.e, text: x.text, nl: x.nl, ask: x.ask, opts: x.opts, a: x.a });
     });
     s.push({ t: 'end' });
     return s;
@@ -286,7 +286,7 @@
       h += '<div class="lx-q">' + esc(u.title) + ' <span class="muted" style="font-weight:400">· 📕 ص ' + ar(esc(u.pages)) + '</span></div>';
       u.rule.forEach(function (r) { h += '<div class="lx-rule"><b>' + esc(r[0]) + '</b> ' + esc(r[1]) + (r[2] ? '<div class="nl">' + esc(r[2]) + '</div>' : '') + '</div>'; });
       if (u.tip) h += '<div class="lx-tip">💡 ' + esc(u.tip) + '</div>';
-      h += credit() + '<div class="lx-cards">' + u.examples.map(function (e) { return '<button class="lx-card" type="button" data-say="' + esc(e[0]) + '"><span class="e">' + pic(e[1]) + '</span><span class="w">' + esc(e[0]) + '</span></button>'; }).join('') + '</div>';
+      h += credit() + '<div class="lx-cards">' + u.examples.map(function (e) { return '<button class="lx-card" type="button" data-say="' + esc(e[0]) + '"><span class="e">' + pic(e[1]) + '</span><span class="w">' + esc(e[0]) + '</span>' + (e[2] ? '<span class="n">' + esc(e[2]) + '</span>' : '') + '</button>'; }).join('') + '</div>';
       h += '<button class="lx-next" type="button" data-lx="next">' + (nl() ? 'Start de oefeningen ▶' : 'ابْدَأِ التَّمَارِينَ ▶') + '</button>';
     } else if (x.t === 'mcq') {
       h += '<div class="lx-q">' + esc(x.q) + '</div><div class="lx-pic">' + pic(x.e) + '</div>';
@@ -294,7 +294,7 @@
       h += '<div class="lx-opts">' + x.opts.map(function (o, i) { return '<button class="lx-opt' + (x.small ? ' sm' : '') + '" type="button" data-opt="' + i + '">' + esc(o) + '</button>'; }).join('') + '</div>';
       h += '<div class="lx-fb" id="lxFb"></div><button class="lx-next" type="button" data-lx="next" disabled>' + (nl() ? 'Volgende ◀' : 'التَّالِي ◀') + '</button>';
     } else if (x.t === 'read') {
-      h += '<div class="lx-q">' + esc(x.q) + '</div><div class="lx-pic">' + x.e + '</div><div class="lx-read">' + esc(x.text) + ' ' + spk(x.text) + '</div>';
+      h += '<div class="lx-q">' + esc(x.q) + '</div><div class="lx-pic">' + x.e + '</div><div class="lx-read">' + esc(x.text) + ' ' + spk(x.text) + '</div>' + (x.nl ? '<details class="lx-vt" style="margin:8px 0 0;direction:ltr;text-align:left;color:#5f6f68;font-size:.95rem"><summary style="cursor:pointer">Vertaling</summary>' + esc(x.nl) + '</details>' : '');
       h += '<div class="lx-q" style="margin-top:14px">' + esc(x.ask) + '</div><div class="lx-opts">' + x.opts.map(function (o, i) { return '<button class="lx-opt sm" type="button" data-opt="' + i + '">' + esc(o) + '</button>'; }).join('') + '</div>';
       h += '<div class="lx-fb" id="lxFb"></div><button class="lx-next" type="button" data-lx="next" disabled>' + (nl() ? 'Volgende ◀' : 'التَّالِي ◀') + '</button>';
     } else if (x.t === 'order') {
