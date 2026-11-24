@@ -20,7 +20,7 @@
       doneOk: '✓ تم إنجاز الواجب — أحسنت!', undo: 'تراجع', prev: 'الدروس السابقة', noLesson: 'لا يوجد درس مسجّل بعد. سيظهر هنا درس الأسبوع وواجبه.',
       bravo: 'أحسنت يا ', partyText: 'بارك الله فيك! استمر هكذا 🌟', loading: 'جارٍ التحميل…', qErr: 'تعذّر تحميل الآيات. حاول مرة أخرى.',
       doneShort: '✓ أُنجز', notDone: 'لم يُنجز', allGroups: 'كل المجموعات', grp: 'المجموعة ',
-      pr: 'تدريب هذا الأسبوع', min: ' دقيقة', of: ' من ', days: 'أيام التدريب: ', last: 'آخر تدريب: ', never: 'لم يبدأ التدريب بعد', today: 'اليوم', yest: 'أمس',
+      qur: 'قرآن', arb: 'عربي', mn: ' د', pr: 'تدريب هذا الأسبوع', min: ' دقيقة', of: ' من ', days: 'أيام التدريب: ', last: 'آخر تدريب: ', never: 'لم يبدأ التدريب بعد', today: 'اليوم', yest: 'أمس',
       games: 'ألعاب المراجعة', gMem: 'لعبة الذاكرة', gSp: 'تحدي ٦٠ ثانية',
       arabic: 'اللغة العربية', book: 'الكتاب ص ', langGo: '▶ ابدأ تمارين اللغة', langAgain: '🔁 أعد التمارين', langDone: 'أنهيتَ التمارين', print: 'ورقة للطباعة',
       libLessons: 'الدروس السابقة', libSurahs: 'السور المحفوظة', libHint: 'اضغط على السورة لتسمعها وتراجعها. وقت المراجعة يُحسب في تدريب الأسبوع 🎧', noOld: 'لا توجد دروس سابقة بعد.', ayatN: ' آيات', fullSurah: 'السورة كاملة',
@@ -31,7 +31,7 @@
       doneOk: '✓ Huiswerk gedaan — goed zo!', undo: 'ongedaan maken', prev: 'Vorige lessen', noLesson: 'Nog geen les ingevoerd. Hier verschijnt de les en het huiswerk van de week.',
       bravo: 'Goed gedaan, ', partyText: 'Ga zo door! 🌟', loading: 'Laden…', qErr: 'Verzen konden niet worden geladen. Probeer opnieuw.',
       doneShort: '✓ gedaan', notDone: 'niet gedaan', allGroups: 'alle groepen', grp: 'Groep ',
-      pr: 'Oefenen deze week', min: ' min', of: ' van ', days: 'Oefendagen: ', last: 'Laatst geoefend: ', never: 'Nog niet geoefend', today: 'vandaag', yest: 'gisteren',
+      qur: 'Koran', arb: 'Arabisch', mn: ' min', pr: 'Oefenen deze week', min: ' min', of: ' van ', days: 'Oefendagen: ', last: 'Laatst geoefend: ', never: 'Nog niet geoefend', today: 'vandaag', yest: 'gisteren',
       games: 'Oefenspelletjes', gMem: 'Geheugenspel', gSp: '60 seconden',
       arabic: 'Arabisch', book: 'boek p. ', langGo: '▶ Start de oefeningen', langAgain: '🔁 Opnieuw oefenen', langDone: 'Oefeningen af', print: 'Werkblad printen',
       libLessons: 'Vorige lessen', libSurahs: 'Geleerde soera\'s', libHint: 'Tik op een soera om te luisteren en te herhalen. Herhalen telt mee voor het weekdoel 🎧', noOld: 'Nog geen vorige lessen.', ayatN: ' verzen', fullSurah: 'Hele soera',
@@ -94,11 +94,11 @@
   }
   function pracHtml(k) {
     var p = k.practice || { weekSecs: 0, goalSecs: 1200, weekDays: 0, last: '' }, L = w();
-    return '<div class="prac" id="pr_' + k.num + '" data-base="' + (p.weekSecs || 0) + '" data-goal="' + (p.goalSecs || 1200) + '" data-name="' + esc(first(k.name)) + '">' +
+    return '<div class="prac" id="pr_' + k.num + '" data-base="' + (p.weekSecs || 0) + '" data-goal="' + (p.goalSecs || 1200) + '" data-ba="' + (p.weekArabic || 0) + '" data-name="' + esc(first(k.name)) + '">' +
       '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#eee6d2" stroke-width="7"/>' +
       '<circle class="rv" cx="32" cy="32" r="26" fill="none" stroke="#2bb673" stroke-width="7" stroke-linecap="round" transform="rotate(-90 32 32)" stroke-dasharray="163.4" stroke-dashoffset="163.4"/>' +
       '<text x="32" y="37" text-anchor="middle" font-size="15" font-weight="700" fill="#0f4d3c" font-family="Inter,sans-serif">0%</text></svg>' +
-      '<div><b>🎧 ' + esc(L.pr) + '</b><div class="pv"></div><div class="muted">' + esc(L.days) + '<bdi>' + (p.weekDays || 0) + '</bdi> · ' + esc(lastTxt(p.last)) + '</div></div></div>';
+      '<div><b>🎧 ' + esc(L.pr) + '</b><div class="pv"></div><div class="muted sp" style="font-size:.9rem"></div><div class="muted">' + esc(L.days) + '<bdi>' + (p.weekDays || 0) + '</bdi> · ' + esc(lastTxt(p.last)) + '</div></div></div>';
   }
   function updateRing(num) {
     var el = document.getElementById('pr_' + num); if (!el) return;
@@ -108,6 +108,9 @@
     el.querySelector('text').textContent = Math.round(pct * 100) + '%';
     el.querySelector('.pv').innerHTML = '<bdi>' + mins + '</bdi>' + esc(L.of) + '<bdi>' + Math.round(goal / 60) + '</bdi>' + esc(L.min) +
       (secs < 60 ? ' · <span class="muted">' + esc(L.listenHint) + '</span>' : '');
+    var sp = el.querySelector('.sp');
+    if (sp) { var ar = +(el.dataset.ba || 0) + (liveAr[num] || 0), qu = Math.max(0, secs - ar);
+      sp.innerHTML = '📖 ' + esc(L.qur) + ' <bdi>' + Math.floor(qu / 60) + '</bdi>' + esc(L.mn) + ' · ✏️ ' + esc(L.arb) + ' <bdi>' + Math.floor(ar / 60) + '</bdi>' + esc(L.mn); }
     var key = 'goal_' + num + '_' + weekStr();
     if (secs >= goal && +el.dataset.base < goal) {
       var seen = null; try { seen = localStorage.getItem(key); } catch (e) {}
@@ -116,13 +119,14 @@
   }
 
   /* ---------- activity reporting (opened lesson, listening seconds, ayah repeats) ---------- */
-  var pend = {};
+  var pend = {}, liveAr = {};
+  function isAr(key) { var l = String(key).split('_')[1] || ''; return l === 'GAME' || l.indexOf('U-') === 0; }
   function addAct(key, secs, reps) {
     if (!key) return;
     var o = pend[key] = pend[key] || { secs: 0, reps: 0 };
     o.secs += secs || 0; o.reps += reps || 0;
     var num = key.split('_')[0];
-    if (secs) { liveSecs[num] = (liveSecs[num] || 0) + secs; updateRing(num); }
+    if (secs) { liveSecs[num] = (liveSecs[num] || 0) + secs; if (isAr(key)) liveAr[num] = (liveAr[num] || 0) + secs; updateRing(num); }
   }
   function post(body) {
     if (!window.authBody || !authBody(body)) return;
@@ -190,7 +194,7 @@
     stopAll();
     var num = b.dataset.num, key = b.dataset.key, unit = b.dataset.langgo;
     LangRun.open(unit, {
-      onTime: function (s) { addAct(key, s, 0); },
+      onTime: function (s) { addAct(num + '_U-' + unit, s, 0); },
       onDone: function (ok, tot, stars) {
         try { var prev = +localStorage.getItem('lx_' + num + '_' + unit) || 0; if (stars > prev) localStorage.setItem('lx_' + num + '_' + unit, stars); } catch (e) {}
         post({ action: 'activity', num: num, lesson: 'U-' + unit, reps: ok }); flush();
