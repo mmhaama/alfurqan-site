@@ -284,7 +284,7 @@
       h += '<button class="lx-next" type="button" data-lx="next">' + (nl() ? 'Start de oefeningen ▶' : 'ابْدَأِ التَّمَارِينَ ▶') + '</button>';
     } else if (x.t === 'introG') {
       h += '<div class="lx-q">' + esc(u.title) + ' <span class="muted" style="font-weight:400">· 📕 ص ' + ar(esc(u.pages)) + '</span></div>';
-      u.rule.forEach(function (r) { h += '<div class="lx-rule"><b>' + esc(r[0]) + '</b>' + esc(r[1]) + (r[2] ? '<div class="nl">' + esc(r[2]) + '</div>' : '') + '</div>'; });
+      u.rule.forEach(function (r) { h += '<div class="lx-rule"><b>' + esc(r[0]) + '</b> ' + esc(r[1]) + (r[2] ? '<div class="nl">' + esc(r[2]) + '</div>' : '') + '</div>'; });
       if (u.tip) h += '<div class="lx-tip">💡 ' + esc(u.tip) + '</div>';
       h += credit() + '<div class="lx-cards">' + u.examples.map(function (e) { return '<button class="lx-card" type="button" data-say="' + esc(e[0]) + '"><span class="e">' + pic(e[1]) + '</span><span class="w">' + esc(e[0]) + '</span></button>'; }).join('') + '</div>';
       h += '<button class="lx-next" type="button" data-lx="next">' + (nl() ? 'Start de oefeningen ▶' : 'ابْدَأِ التَّمَارِينَ ▶') + '</button>';
